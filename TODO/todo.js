@@ -26,11 +26,11 @@ input.addEventListener('keypress', function(event) {
 
 ul.addEventListener('mouseover', function(event) {
     if (event.target.tagName === 'LI') {
-        event.target.style.textDecoration = 'highlight';
+        event.target.style.backgroundColor = 'yellow';
     }   
 });
 ul.addEventListener('mouseout', function(event) {
     if (event.target.tagName === 'LI') {
-        event.target.style.textDecoration = 'none';
+        event.target.style.backgroundColor = '';
     }
 });
