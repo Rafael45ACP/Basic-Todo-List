@@ -3,7 +3,7 @@ let input = document.getElementById('taskInput');
 let button = document.getElementById('addTask');
 
 function addTask() {
-    let task = input.value;
+    let task = input.value.trim();
     if (task) {
         let li = document.createElement('li');
         li.textContent = task;
@@ -17,7 +17,7 @@ function addTask() {
 
 button.addEventListener('click', addTask);
 
-input.addEventListener('keypress', function(event) {
+input.addEventListener('keydown', function(event) {
     if (event.key === 'Enter') {
         addTask();
     }
@@ -32,5 +32,11 @@ ul.addEventListener('mouseover', function(event) {
 ul.addEventListener('mouseout', function(event) {
     if (event.target.tagName === 'LI') {
         event.target.style.backgroundColor = '';
+    }
+});
+
+ul.addEventListener('click', function(event) {
+    if (event.target.tagName === 'LI') {
+        this.removeChild(event.target);
     }
 });
