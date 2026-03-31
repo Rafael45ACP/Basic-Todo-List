@@ -43,12 +43,6 @@ ul.addEventListener('mouseout', function(event) {
     }
 });
 
-ul.addEventListener('click', function(event) {
-    if (event.target.tagName === 'SPAN') {
-        event.target.parentElement.remove();
-    }
-});
-
 ul.addEventListener('change', function(event) {
     if (event.target.type === 'checkbox') {
         let span = event.target.nextElementSibling;
@@ -59,5 +53,30 @@ ul.addEventListener('change', function(event) {
             span.style.textDecoration = '';
             span.style.color = '';
         }
+    }
+});
+
+ul.addEventListener('dblclick', function(event) {
+    if (event.target.tagName === 'SPAN') {
+        let span = event.target;
+        let currentText = span.textContent;
+
+        let editInput = document.createElement('input');
+        editInput.type = 'text';
+        editInput.value = currentText;
+        
+        span.replaceWith(editInput);
+        editInput.focus();
+
+        editInput.addEventListener('blur', function() {
+            span.textContent = editInput.value.trim() || currentText;
+            editInput.replaceWith(span);
+        });
+
+        editInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                editInput.blur();
+            }
+        });
     }
 });
