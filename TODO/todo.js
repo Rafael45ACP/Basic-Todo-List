@@ -1,24 +1,45 @@
 let ul = document.getElementById('todo');
 let input = document.getElementById('taskInput');
 let button = document.getElementById('addTask');
+let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
 
-function addTask() {
-    let task = input.value.trim();
-    if (task) {
+function saveTasks() {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
+}
+
+function renderTasks() {
+    ul.innerHTML = '';
+    tasks.forEach((task, index) => {
         let li = document.createElement('li');
         let checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
-        li.appendChild(checkbox);
+        checkbox.checked = task.done;
+        
         let span = document.createElement('span');
-        span.textContent = task;
-        li.appendChild(span);
+        span.textContent = task.text;
+        if (task.done) {
+            span.style.textDecoration = 'line-through';
+            span.style.color = 'gray';
+        }
 
+        li.appendChild(checkbox);
+        li.appendChild(span);
+        
+        li.dataset.index = index;
         ul.appendChild(li);
-        input.value = '';
-    }
-    else {
+    });
+}
+
+function addTask() {
+    let value = input.value.trim();
+    if(!value) {
         alert('Please enter a task.');
+        return;
     }
+    tasks.push({ text: value, done: false });
+    saveTasks();
+    renderTasks();
+    input.value = '';
 }
 
 button.addEventListener('click', addTask);
@@ -45,38 +66,39 @@ ul.addEventListener('mouseout', function(event) {
 
 ul.addEventListener('change', function(event) {
     if (event.target.type === 'checkbox') {
+        
+        let li = event.target.closest('li');
+        let index = li.dataset.index;
         let span = event.target.nextElementSibling;
-        if (event.target.checked) {
-            span.style.textDecoration = 'line-through';
-            span.style.color = 'gray';
-        } else {
-            span.style.textDecoration = '';
-            span.style.color = '';
-        }
+
+        tasks[index].done = event.target.checked;
+        saveTasks();
+
     }
 });
 
 ul.addEventListener('dblclick', function(event) {
     if (event.target.tagName === 'SPAN') {
-        let span = event.target;
-        let currentText = span.textContent;
-        let editcheckbox = span.previousElementSibling;
+
+        let li = event.target.closest('li');
+        let index = li.dataset.index;
+
+        let currentText = tasks[index].text;
 
         let editInput = document.createElement('input');
-        editInput.type = 'text';
         editInput.value = currentText;
-
-        span.replaceWith(editInput);
+        
+        event.target.replaceWith(editInput);
         editInput.focus();
 
         editInput.addEventListener('blur', function() {
-            span.textContent = editInput.value.trim() || currentText;
-            editInput.replaceWith(span);
-            if (editcheckbox.checked) {
-                editcheckbox.checked = false;
-                span.style.textDecoration = '';
-                span.style.color = '';
+            let newValue = editInput.value.trim() ;
+            if (newValue) {
+                tasks[index].text = newValue;
+                
             }
+            saveTasks();
+            renderTasks();
         });
 
         editInput.addEventListener('keydown', function(event) {
