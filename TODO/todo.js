@@ -108,3 +108,5 @@ ul.addEventListener('dblclick', function(event) {
         });
     }
 });
+
+renderTasks();
