@@ -71,7 +71,15 @@ ul.addEventListener('change', function(event) {
         let index = li.dataset.index;
         let span = event.target.nextElementSibling;
 
+
         tasks[index].done = event.target.checked;
+        if (tasks[index].done) {
+            span.style.textDecoration = 'line-through';
+            span.style.color = 'gray';
+        } else {
+            span.style.textDecoration = '';
+            span.style.color = '';
+        }
         saveTasks();
 
     }
@@ -95,6 +103,7 @@ ul.addEventListener('dblclick', function(event) {
             let newValue = editInput.value.trim() ;
             if (newValue) {
                 tasks[index].text = newValue;
+                tasks[index].done = false;
                 
             }
             saveTasks();
