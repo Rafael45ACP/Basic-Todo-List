@@ -2,6 +2,7 @@ let ul = document.getElementById('todo');
 let input = document.getElementById('taskInput');
 let button = document.getElementById('addTask');
 let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+let draggedIndex = null;
 
 function saveTasks() {
     localStorage.setItem('tasks', JSON.stringify(tasks));
@@ -27,6 +28,8 @@ function renderTasks() {
         
         li.dataset.index = index;
         ul.appendChild(li);
+
+        li.draggable = true;
     });
 }
 
@@ -116,6 +119,29 @@ ul.addEventListener('dblclick', function(event) {
             }
         });
     }
+});
+
+ul.addEventListener('dragstart', function(event) {
+    let li = event.target.closest('li');
+    if (li) {
+        draggedIndex = li.dataset.index;
+    }
+});
+
+ul.addEventListener('dragover', function(event) {
+    event.preventDefault();
+});
+
+ul.addEventListener('drop', function(event) {
+    event.preventDefault();
+    let li = event.target.closest('li');
+    if (li && draggedIndex !== null) {
+        let targetIndex = li.dataset.index;
+        [tasks[draggedIndex], tasks[targetIndex]] = [tasks[targetIndex], tasks[draggedIndex]];
+        saveTasks();
+        renderTasks();
+    }
+    draggedIndex = null;
 });
 
 renderTasks();
