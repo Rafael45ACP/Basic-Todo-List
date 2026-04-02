@@ -23,9 +23,18 @@ function renderTasks() {
             span.style.color = 'gray';
         }
 
+        let deleteButton = document.createElement('button');
+        deleteButton.textContent = 'Delete';
+        deleteButton.addEventListener('click', function() {
+            tasks.splice(index, 1);
+            saveTasks();
+            renderTasks();
+        });
+
         li.appendChild(checkbox);
         li.appendChild(span);
-        
+        li.appendChild(deleteButton);
+
         li.dataset.index = index;
         ul.appendChild(li);
 
