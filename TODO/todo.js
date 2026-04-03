@@ -33,15 +33,12 @@ function renderTasks() {
             renderTasks();
         });
 
-        let handle = document.createElement('span');
-        handle.textContent = '☰';
-        handle.classList.add('handle');
-        handle.style.cursor = 'grab';
+      
 
         li.appendChild(checkbox);
         li.appendChild(span);
         li.appendChild(deleteButton);
-        li.appendChild(handle);
+       
 
         li.dataset.index = index;
         ul.appendChild(li);
@@ -139,9 +136,6 @@ ul.addEventListener('dblclick', function(event) {
 });
 
 ul.addEventListener('dragstart', function(event) {
-    if (event.target.textContent !== '☰') {
-        return;
-    }
     let li = event.target.closest('li');
     if (li) {
         draggedIndex = li.dataset.index;
