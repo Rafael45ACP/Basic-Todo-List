@@ -1,0 +1,11 @@
+.task-item{
+    padding: 5px;
+    cursor: grab;
+}
+
+.task-item.dragging {
+    opacity: 0.5;
+}
+.task-item.over {
+    border-top: 2px solid blue;
+}

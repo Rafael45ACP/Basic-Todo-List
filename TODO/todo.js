@@ -15,6 +15,8 @@ function renderTasks() {
         let checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.checked = task.done;
+
+        li.classList.add('task-item');
         
         let span = document.createElement('span');
         span.textContent = task.text;
@@ -31,9 +33,15 @@ function renderTasks() {
             renderTasks();
         });
 
+        let handle = document.createElement('span');
+        handle.textContent = '☰';
+        handle.classList.add('handle');
+        handle.style.cursor = 'grab';
+
         li.appendChild(checkbox);
         li.appendChild(span);
         li.appendChild(deleteButton);
+        li.appendChild(handle);
 
         li.dataset.index = index;
         ul.appendChild(li);
@@ -131,26 +139,58 @@ ul.addEventListener('dblclick', function(event) {
 });
 
 ul.addEventListener('dragstart', function(event) {
+    if (event.target.textContent !== '☰') {
+        return;
+    }
     let li = event.target.closest('li');
     if (li) {
         draggedIndex = li.dataset.index;
+    }
+    li.classList.add('dragging');
+});
+
+ul.addEventListener('dragend', function(event) {
+    let li = event.target.closest('li');
+    if (li) {
+        li.classList.remove('dragging');
     }
 });
 
 ul.addEventListener('dragover', function(event) {
     event.preventDefault();
+
+    let li = event.target.closest('li');
+    if (!li) return;
+
+    document.querySelectorAll('.over').forEach(el => el.classList.remove('over'));
+    li.classList.add('over');
 });
 
 ul.addEventListener('drop', function(event) {
     event.preventDefault();
     let li = event.target.closest('li');
-    if (li && draggedIndex !== null) {
-        let targetIndex = li.dataset.index;
-        [tasks[draggedIndex], tasks[targetIndex]] = [tasks[targetIndex], tasks[draggedIndex]];
-        saveTasks();
-        renderTasks();
+    if (!li) return;
+
+    let targetIndex = li.dataset.index;
+    
+    let rect = li.getBoundingClientRect();
+    let isBelow = event.clientY > rect.top + rect.height / 2;
+
+    let draggedItem = tasks.splice(draggedIndex, 1)[0];
+
+    if(draggedIndex < targetIndex) {
+        targetIndex--;
     }
-    draggedIndex = null;
+
+    if (isBelow) {
+        tasks.splice(targetIndex + 1, 0, draggedItem);
+    }
+    else {
+        tasks.splice(targetIndex, 0, draggedItem);
+    }
+
+    saveTasks();
+    renderTasks();
 });
 
 renderTasks();
