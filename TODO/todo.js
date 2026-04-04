@@ -4,6 +4,42 @@ let button = document.getElementById('addTask');
 let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
 let draggedIndex = null;
 
+function getPositions(){
+    let items = document.querySelectorAll('#todo li');
+    let map = new Map();
+    items.forEach((item => {
+        let index = item.dataset.index;
+        let rect = item.getBoundingClientRect();
+        map.set(index, rect);
+    }));
+
+    return map;
+}
+
+function animateFlip(oldPositions){
+    let items = document.querySelectorAll('#todo li');
+    items.forEach(item => {
+        let index = item.dataset.index;
+        let old = oldPositions.get(index);
+        let newRect = item.getBoundingClientRect();
+
+        if(!old) return;
+
+        let deltaX = old.left - newRect.left;
+        let deltaY = old.top - newRect.top;
+
+        if(deltaX || deltaY) {
+            item.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
+            item.style.transition = 'transform 0s';
+
+            requestAnimationFrame(() => {
+                item.style.transform = '';
+                item.style.transition = 'transform 200ms ease';
+            });
+
+
+}
+
 function saveTasks() {
     localStorage.setItem('tasks', JSON.stringify(tasks));
 }
@@ -183,8 +219,11 @@ ul.addEventListener('drop', function(event) {
         tasks.splice(targetIndex, 0, draggedItem);
     }
 
+    let oldPositions = getPositions();
     saveTasks();
     renderTasks();
+    animateFlip(oldPositions);
 });
 
 renderTasks();
+})}
