@@ -39,6 +39,8 @@ function animateFlip(oldPositions){
 
 
 }
+});
+}
 
 function saveTasks() {
     localStorage.setItem('tasks', JSON.stringify(tasks));
@@ -226,4 +228,5 @@ ul.addEventListener('drop', function(event) {
 });
 
 renderTasks();
-})}
+
+
