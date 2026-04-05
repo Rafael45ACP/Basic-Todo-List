@@ -67,9 +67,9 @@ function renderTasks() {
         let deleteButton = document.createElement('button');
         deleteButton.textContent = 'Delete';
         deleteButton.addEventListener('click', function() {
-            //tasks.splice(index, 1);
+            tasks.splice(index, 1);
             saveTasks();
-            //renderTasks();
+            renderTasks();
         });
 
         ul.addEventListener('click', function(event) {
