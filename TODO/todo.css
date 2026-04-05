@@ -1,6 +1,23 @@
 .task-item{
-    padding: 5px;
-    cursor: grab;
+    transition: all 200ms ease;
+}
+
+.task-item.enter{
+    opacity: 0;
+    transform: translateY(-10px);
+}
+
+.task-item.enter-active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.task-item.exit {
+    opacity: 1;
+    transform: translateY(0);
+}
+.task-item.exit-active {    opacity: 0;
+    transform: translateY(10px);
 }
 
 .task-item.dragging {

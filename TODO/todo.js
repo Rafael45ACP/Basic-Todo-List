@@ -50,6 +50,7 @@ function renderTasks() {
     ul.innerHTML = '';
     tasks.forEach((task, index) => {
         let li = document.createElement('li');
+        li.classList.add('task-item','enter');
         let checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.checked = task.done;
@@ -66,9 +67,28 @@ function renderTasks() {
         let deleteButton = document.createElement('button');
         deleteButton.textContent = 'Delete';
         deleteButton.addEventListener('click', function() {
-            tasks.splice(index, 1);
+            //tasks.splice(index, 1);
             saveTasks();
-            renderTasks();
+            //renderTasks();
+        });
+
+        ul.addEventListener('click', function(event) {
+            if (event.target === 'SPAN') {
+                let li = event.target.closest('li');
+                let index = li.dataset.index;
+
+                li.classList.add('exit');
+
+                requestAnimationFrame(() => {
+                    li.classList.add('exit-active');
+                });
+
+                li.addEventListener('transitionend', function() {
+                    tasks.splice(index, 1);
+                    saveTasks();
+                    renderTasks();
+                }, { once: true });
+            }
         });
 
       
@@ -80,6 +100,13 @@ function renderTasks() {
 
         li.dataset.index = index;
         ul.appendChild(li);
+        requestAnimationFrame(() => {
+            li.classList.add('enter-active');
+        });
+
+        li.addEventListener('transitionend', function() {
+            li.classList.remove('enter', 'enter-active');
+        }, { once: true });
 
         li.draggable = true;
     });
