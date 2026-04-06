@@ -55,8 +55,7 @@ function renderTasks() {
         checkbox.type = 'checkbox';
         checkbox.checked = task.done;
 
-        let desc = document.createElement('p');
-        desc.textContent = '';
+        let input2 = document.createElement('input');
         let descButton = document.createElement('button');
         descButton.textContent = 'Description';
         descButton.addEventListener('click', function() {
@@ -64,6 +63,19 @@ function renderTasks() {
                 desc.style.display = 'none';
             } else {
                 desc.style.display = 'block';
+                ul.addEventListener('keydown', function(event) {
+                    if(event.target === input2 ){
+                        if (event.key === 'Enter') {
+                            let newValue = input2.value.trim();
+                            if (newValue) {
+                                tasks[index].description = newValue;
+                                saveTasks();
+                                renderTasks();
+                            }
+                        }
+
+                    }
+                });
             }
         });
 
@@ -108,7 +120,6 @@ function renderTasks() {
         li.appendChild(checkbox);
         li.appendChild(span);
         li.appendChild(deleteButton);
-        li.appendChild(desc);
         li.appendChild(descButton);
 
 
