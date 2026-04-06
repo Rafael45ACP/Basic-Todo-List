@@ -55,6 +55,18 @@ function renderTasks() {
         checkbox.type = 'checkbox';
         checkbox.checked = task.done;
 
+        let desc = document.createElement('p');
+        desc.textContent = '';
+        let descButton = document.createElement('button');
+        descButton.textContent = 'Description';
+        descButton.addEventListener('click', function() {
+            if (desc.style.display === 'block') {
+                desc.style.display = 'none';
+            } else {
+                desc.style.display = 'block';
+            }
+        });
+
         li.classList.add('task-item');
         
         let span = document.createElement('span');
@@ -96,7 +108,10 @@ function renderTasks() {
         li.appendChild(checkbox);
         li.appendChild(span);
         li.appendChild(deleteButton);
-       
+        li.appendChild(desc);
+        li.appendChild(descButton);
+
+
 
         li.dataset.index = index;
         ul.appendChild(li);
@@ -252,6 +267,39 @@ ul.addEventListener('drop', function(event) {
     saveTasks();
     renderTasks();
     animateFlip(oldPositions);
+});
+
+ul.addEventListener('dblclick', function(event) {
+    if (event.target.tagName ===  'P') {
+
+        let li = event.target.closest('li');
+        let index = li.dataset.index;
+
+        let currentText = tasks[index].text;
+
+        let editInput = document.createElement('input');
+        editInput.value = currentText;
+        
+        event.target.replaceWith(editInput);
+        editInput.focus();
+
+        editInput.addEventListener('blur', function() {
+            let newValue = editInput.value.trim() ;
+            if (newValue) {
+                tasks[index].text = newValue;
+                tasks[index].done = false;
+                
+            }
+            saveTasks();
+            renderTasks();
+        });
+
+        editInput.addEventListener('keydown', function(event) {
+            if (event.key === 'Enter') {
+                editInput.blur();
+            }
+        });
+    }
 });
 
 renderTasks();
