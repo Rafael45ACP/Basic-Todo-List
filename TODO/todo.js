@@ -4,6 +4,11 @@ let button = document.getElementById('addTask');
 let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
 let draggedIndex = null;
 
+let filter = 'all';
+let allFilter = document.getElementById('ALL');
+let activeFilter = document.getElementById('ACTIVE');
+let completedFilter = document.getElementById('COMPLETED');
+
 function getPositions(){
     let items = document.querySelectorAll('#todo li');
     let map = new Map();
@@ -49,6 +54,10 @@ function saveTasks() {
 function renderTasks() {
     ul.innerHTML = '';
     tasks.forEach((task, index) => {
+
+        if (filter === 'active' && task.done) return;
+        if (filter === 'completed' && !task.done) return;
+        
         let li = document.createElement('li');
         li.classList.add('task-item','enter');
         let checkbox = document.createElement('input');
@@ -74,24 +83,7 @@ function renderTasks() {
             renderTasks();
         });
 
-        ul.addEventListener('click', function(event) {
-            if (event.target === 'SPAN') {
-                let li = event.target.closest('li');
-                let index = li.dataset.index;
-
-                li.classList.add('exit');
-
-                requestAnimationFrame(() => {
-                    li.classList.add('exit-active');
-                });
-
-                li.addEventListener('transitionend', function() {
-                    tasks.splice(index, 1);
-                    saveTasks();
-                    renderTasks();
-                }, { once: true });
-            }
-        });
+        
 
       
 
@@ -113,8 +105,29 @@ function renderTasks() {
         }, { once: true });
 
         li.draggable = true;
+
+        
     });
 }
+
+ul.addEventListener('click', function(event) {
+            if (event.target.tagName === 'SPAN') {
+                let li = event.target.closest('li');
+                let index = li.dataset.index;
+
+                li.classList.add('exit');
+
+                requestAnimationFrame(() => {
+                    li.classList.add('exit-active');
+                });
+
+                li.addEventListener('transitionend', function() {
+                    tasks.splice(index, 1);
+                    saveTasks();
+                    renderTasks();
+                }, { once: true });
+            }
+        });
 
 function addTask() {
     let value = input.value.trim();
@@ -258,7 +271,36 @@ ul.addEventListener('drop', function(event) {
     animateFlip(oldPositions);
 });
 
+function setFilter(selectedFilter)
+{    
+    filter = selectedFilter;
+    allFilter.checked = selectedFilter === 'all';
+    activeFilter.checked = selectedFilter === 'active';
+    completedFilter.checked = selectedFilter === 'completed';
+  
+    renderTasks();
+}
 
+allFilter.addEventListener('change', function() {
+    if(allFilter.checked) {
+       setFilter('all');
+    }
+});
+
+activeFilter.addEventListener('change', function() {
+    if(activeFilter.checked) {
+        setFilter('active');
+    }
+});
+
+completedFilter.addEventListener('change', function() {
+    if(completedFilter.checked) {
+     setFilter('completed');
+    }
+
+});
+
+setFilter('all');
 
 renderTasks();
 
