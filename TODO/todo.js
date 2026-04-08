@@ -75,6 +75,8 @@ function renderTasks() {
             span.style.color = 'gray';
         }
 
+        let div = document.createElement('div');
+
         let deleteButton = document.createElement('button');
         deleteButton.textContent = 'Delete';
         deleteButton.addEventListener('click', function() {
@@ -89,7 +91,8 @@ function renderTasks() {
 
         li.appendChild(checkbox);
         li.appendChild(span);
-        li.appendChild(deleteButton);
+        li.appendChild(div);
+        div.appendChild(deleteButton);
         // li.appendChild(descButton);
 
 
@@ -281,24 +284,9 @@ function setFilter(selectedFilter)
     renderTasks();
 }
 
-allFilter.addEventListener('change', function() {
-    if(allFilter.checked) {
-       setFilter('all');
-    }
-});
-
-activeFilter.addEventListener('change', function() {
-    if(activeFilter.checked) {
-        setFilter('active');
-    }
-});
-
-completedFilter.addEventListener('change', function() {
-    if(completedFilter.checked) {
-     setFilter('completed');
-    }
-
-});
+allFilter.addEventListener('change', () => setFilter('all'));
+activeFilter.addEventListener('change', () => setFilter('active'));
+completedFilter.addEventListener('change', () => setFilter('completed'));
 
 setFilter('all');
 
