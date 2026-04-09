@@ -70,10 +70,23 @@ function renderTasks() {
         
         let span = document.createElement('span');
         span.textContent = task.text;
+        //span.classList.add('task-text');
+
+
+        let categorySpan = document.createElement('span');
+        categorySpan.textContent = ` [${task.category}]`;
+        categorySpan.style.fontStyle = 'italic';
+        categorySpan.style.color = 'blue';
+       
+
+        let deadlineSpan = document.createElement('span');
+
         if (task.done) {
             span.style.textDecoration = 'line-through';
             span.style.color = 'gray';
         }
+
+
 
         let div = document.createElement('div');
 
@@ -91,6 +104,13 @@ function renderTasks() {
 
         li.appendChild(checkbox);
         li.appendChild(span);
+        li.appendChild(categorySpan);
+        if (task.deadline) {
+            deadlineSpan.textContent = ` (Deadline: ${task.deadline})`;
+            deadlineSpan.style.fontStyle = 'Bold';
+            deadlineSpan.style.color = 'red';
+            li.appendChild(deadlineSpan);
+        }
         li.appendChild(div);
         div.appendChild(deleteButton);
         // li.appendChild(descButton);
@@ -113,24 +133,24 @@ function renderTasks() {
     });
 }
 
-ul.addEventListener('click', function(event) {
-            if (event.target.tagName === 'SPAN') {
-                let li = event.target.closest('li');
-                let index = li.dataset.index;
+// ul.addEventListener('click', function(event) {
+//             if (event.target.contains('task-text')) {
+//                 let li = event.target.closest('li');
+//                 let index = li.dataset.index;
 
-                li.classList.add('exit');
+//                 li.classList.add('exit');
 
-                requestAnimationFrame(() => {
-                    li.classList.add('exit-active');
-                });
+//                 requestAnimationFrame(() => {
+//                     li.classList.add('exit-active');
+//                 });
 
-                li.addEventListener('transitionend', function() {
-                    tasks.splice(index, 1);
-                    saveTasks();
-                    renderTasks();
-                }, { once: true });
-            }
-        });
+//                 li.addEventListener('transitionend', function() {
+//                     tasks.splice(index, 1);
+//                     saveTasks();
+//                     renderTasks();
+//                 }, { once: true });
+//             }
+//         });
 
 function addTask() {
     let value = input.value.trim();
@@ -138,7 +158,11 @@ function addTask() {
         alert('Please enter a task.');
         return;
     }
-    tasks.push({ text: value, done: false });
+    let category = document.getElementById('sort').value;
+    let deadline = document.getElementById('deadlineInput').value;
+
+
+    tasks.push({ text: value, done: false, category: category, deadline: deadline });
     saveTasks();
     renderTasks();
     input.value = '';
