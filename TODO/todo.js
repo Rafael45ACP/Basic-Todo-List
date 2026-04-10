@@ -9,6 +9,8 @@ let allFilter = document.getElementById('ALL');
 let activeFilter = document.getElementById('ACTIVE');
 let completedFilter = document.getElementById('COMPLETED');
 
+let now = new Date();
+
 function getPositions(){
     let items = document.querySelectorAll('#todo li');
     let map = new Map();
@@ -41,8 +43,6 @@ function animateFlip(oldPositions){
                 item.style.transform = '';
                 item.style.transition = 'transform 200ms ease';
             });
-
-
 }
 });
 }
@@ -63,15 +63,11 @@ function renderTasks() {
         let checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.checked = task.done;
-
-        
          
         li.classList.add('task-item');
         
         let span = document.createElement('span');
         span.textContent = task.text;
-        //span.classList.add('task-text');
-
 
         let categorySpan = document.createElement('span');
         categorySpan.textContent = ` [${task.category}]`;
@@ -85,8 +81,6 @@ function renderTasks() {
             span.style.textDecoration = 'line-through';
             span.style.color = 'gray';
         }
-
-
 
         let div = document.createElement('div');
 
@@ -106,9 +100,27 @@ function renderTasks() {
         li.appendChild(span);
         li.appendChild(categorySpan);
         if (task.deadline) {
+            let deadline = new Date(task.deadline);
+            deadline.setHours(23, 59, 59);
             deadlineSpan.textContent = ` (Deadline: ${task.deadline})`;
             deadlineSpan.style.fontStyle = 'Bold';
-            deadlineSpan.style.color = 'red';
+            
+            if (deadline.toDateString() > now.toDateString() || task.done) {
+                deadlineSpan.style.color = 'green';
+            }
+            else if (deadline.toDateString() < now.toDateString() && !task.done) {
+                deadlineSpan.style.color = 'red';
+            }
+
+            else if (deadline.toDateString() === now.toDateString()) {
+                deadlineSpan.style.color = 'orange';
+                console.log('Deadline is today!');
+            }
+            
+            if(task.done) {
+                deadlineSpan.style.color = 'grey';
+            }
+
             li.appendChild(deadlineSpan);
         }
         li.appendChild(div);
@@ -132,25 +144,6 @@ function renderTasks() {
         
     });
 }
-
-// ul.addEventListener('click', function(event) {
-//             if (event.target.contains('task-text')) {
-//                 let li = event.target.closest('li');
-//                 let index = li.dataset.index;
-
-//                 li.classList.add('exit');
-
-//                 requestAnimationFrame(() => {
-//                     li.classList.add('exit-active');
-//                 });
-
-//                 li.addEventListener('transitionend', function() {
-//                     tasks.splice(index, 1);
-//                     saveTasks();
-//                     renderTasks();
-//                 }, { once: true });
-//             }
-//         });
 
 function addTask() {
     let value = input.value.trim();
@@ -207,6 +200,7 @@ ul.addEventListener('change', function(event) {
             span.style.color = '';
         }
         saveTasks();
+        renderTasks();
 
     }
 });
@@ -311,6 +305,7 @@ function setFilter(selectedFilter)
 allFilter.addEventListener('change', () => setFilter('all'));
 activeFilter.addEventListener('change', () => setFilter('active'));
 completedFilter.addEventListener('change', () => setFilter('completed'));
+
 
 setFilter('all');
 
