@@ -72,8 +72,15 @@ function renderTasks() {
         let categorySpan = document.createElement('span');
         categorySpan.textContent = ` [${task.category}]`;
         categorySpan.style.fontStyle = 'italic';
-        categorySpan.style.color = 'blue';
-       
+        if(task.category === 'Gym') {
+            categorySpan.style.color = 'blue';
+        }
+        else if(task.category === 'Personal') {
+        categorySpan.style.color = 'green';
+        }
+        else if(task.category === 'School') {
+            categorySpan.style.color = 'yellow';
+        }
 
         let deadlineSpan = document.createElement('span');
 
