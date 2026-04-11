@@ -11,6 +11,19 @@ let completedFilter = document.getElementById('COMPLETED');
 
 let now = new Date();
 
+function numActiveTasks() {
+    return tasks.filter(task => !task.done).length;
+}
+
+function numCompletedTasks() {
+    return tasks.filter(task => task.done).length;
+}
+
+function numTotalTasks() {
+    return tasks.length;
+}
+
+
 function getPositions(){
     let items = document.querySelectorAll('#todo li');
     let map = new Map();
@@ -88,6 +101,14 @@ function renderTasks() {
             span.style.textDecoration = 'line-through';
             span.style.color = 'gray';
         }
+
+        let activeCount = document.getElementById('activeCount');
+        let completedCount = document.getElementById('completedCount');
+        let totalCount = document.getElementById('totalCount');
+
+        activeCount.textContent = numActiveTasks();
+        completedCount.textContent = numCompletedTasks();
+        totalCount.textContent = numTotalTasks();
 
         let div = document.createElement('div');
 
