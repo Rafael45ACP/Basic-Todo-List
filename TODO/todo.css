@@ -26,3 +26,31 @@
 .task-item.over {
     border-top: 2px solid blue;
 }
+body.dark-mode {
+    background-color: #121212;
+    color: peachpuff;
+}
+.dark-mode li {
+    background-color: #1e1e1e;
+    border: 1px solid #333333;
+}
+
+input, button{
+    background-color: white;
+    color: black;
+    border: 1px solid #ccc;
+}
+
+input, button{
+    transition: background-color 0.3s, color 0.3s;
+}
+.dark-mode input, .dark-mode button {
+    background-color: #333333;
+    color: white;
+    border: 1px solid #555555;
+}
+.dark-mode select, .dark-mode option {
+    background-color: #333333;
+    color: white;
+    border: 1px solid #555555;
+}

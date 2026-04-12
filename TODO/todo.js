@@ -11,6 +11,9 @@ let completedFilter = document.getElementById('COMPLETED');
 
 let now = new Date();
 
+let darkModeButton = document.getElementById('DarkMode');
+
+
 function numActiveTasks() {
     return tasks.filter(task => !task.done).length;
 }
@@ -334,6 +337,19 @@ allFilter.addEventListener('change', () => setFilter('all'));
 activeFilter.addEventListener('change', () => setFilter('active'));
 completedFilter.addEventListener('change', () => setFilter('completed'));
 
+darkModeButton.addEventListener('click', function() {
+    document.body.classList.toggle('dark-mode');
+
+    localStorage.setItem(
+        'darkMode', 
+        document.body.classList.contains('dark-mode') ? 'enabled' : 'disabled'
+    )
+});
+
+// Check local storage for dark mode preference on page load
+if (localStorage.getItem('darkMode') === 'enabled') {
+    document.body.classList.add('dark-mode');
+}
 
 setFilter('all');
 
