@@ -117,6 +117,8 @@ function renderTasks() {
             span.style.color = 'gray';
         }
 
+        let timeleftSpan = document.createElement('span');
+        
         let activeCount = document.getElementById('activeCount');
         let completedCount = document.getElementById('completedCount');
         let totalCount = document.getElementById('totalCount');
@@ -166,6 +168,35 @@ function renderTasks() {
 
             li.appendChild(deadlineSpan);
         }
+        if (task.deadline) {
+            let deadline = new Date(task.deadline);
+            deadline.setHours(23, 59, 59);
+            let timeLeft = deadline - now;
+            
+                let days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                let hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                let minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+                timeleftSpan.textContent = ` (${days}d ${hours}h ${minutes}m left)`;
+                timeleftSpan.style.fontWeight = 'bold';
+                
+                if (timeLeft < 0 && !task.done) {
+                    timeleftSpan.textContent = ' (Overdue)';
+                    timeleftSpan.style.color = 'red';
+                }
+                else if (timeLeft <= 24 * 60 * 60 * 1000) {
+                timeleftSpan.style.color = 'orange';
+                }
+                else if (timeLeft <= 3 * 24 * 60 * 60 * 1000) {
+                    timeleftSpan.style.color = 'yellow';
+                }
+                else {
+                    timeleftSpan.style.color = 'green';
+                }
+                li.appendChild(timeleftSpan);
+            
+        }
+
+
         li.appendChild(div);
         div.appendChild(deleteButton);
         // li.appendChild(descButton);
