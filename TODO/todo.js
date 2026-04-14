@@ -246,8 +246,11 @@ input.addEventListener('keydown', function(event) {
 
 ul.addEventListener('mouseover', function(event) {
     let li = event.target.closest('li');
-    if (li) {
-        li.style.backgroundColor = 'yellow';
+    if (li && localStorage.getItem('darkMode') === 'enabled') {
+        li.style.backgroundColor = 'purple';
+    }
+    else if (li) {
+        li.style.backgroundColor = 'lightgray';
     }
 });
 ul.addEventListener('mouseout', function(event) {
