@@ -12,6 +12,13 @@ let completedFilter = document.getElementById('COMPLETED');
 let now = new Date();
 
 let darkModeButton = document.getElementById('DarkMode');
+let clearCompletedButton = document.getElementById('clearCompleted');
+
+clearCompletedButton.addEventListener('click', function() {
+    tasks = tasks.filter(task => !task.done);
+    saveTasks();
+    renderTasks();
+});
 
 
 function numActiveTasks() {
@@ -25,6 +32,8 @@ function numCompletedTasks() {
 function numTotalTasks() {
     return tasks.length;
 }
+
+
 
 
 function getPositions(){
@@ -96,6 +105,9 @@ function renderTasks() {
         }
         else if(task.category === 'School') {
             categorySpan.style.color = 'yellow';
+        }
+        else {
+            categorySpan.textContent = '';
         }
 
         let deadlineSpan = document.createElement('span');
