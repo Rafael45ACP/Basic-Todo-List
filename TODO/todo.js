@@ -183,11 +183,14 @@ function renderTasks() {
                     timeleftSpan.textContent = ' (Overdue)';
                     timeleftSpan.style.color = 'red';
                 }
-                else if (timeLeft <= 24 * 60 * 60 * 1000) {
+                else if (timeLeft <= 24 * 60 * 60 * 1000 && !task.done) {
                 timeleftSpan.style.color = 'orange';
                 }
-                else if (timeLeft <= 3 * 24 * 60 * 60 * 1000) {
+                else if (timeLeft <= 3 * 24 * 60 * 60 * 1000 && !task.done) {
                     timeleftSpan.style.color = 'yellow';
+                }
+                else if(task.done){
+                    timeleftSpan.textContent = '';
                 }
                 else {
                     timeleftSpan.style.color = 'green';
