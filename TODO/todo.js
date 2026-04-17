@@ -9,6 +9,8 @@ let allFilter = document.getElementById('ALL');
 let activeFilter = document.getElementById('ACTIVE');
 let completedFilter = document.getElementById('COMPLETED');
 
+let categoryFilter = document.getElementById('filterCategory');
+
 let now = new Date();
 
 let darkModeButton = document.getElementById('DarkMode');
@@ -82,6 +84,7 @@ function renderTasks() {
 
         if (filter === 'active' && task.done) return;
         if (filter === 'completed' && !task.done) return;
+        if(categoryFilter.value !== 'None' && task.category !== categoryFilter.value) return;
         
         let li = document.createElement('li');
         li.classList.add('task-item','enter');
@@ -385,6 +388,17 @@ function setFilter(selectedFilter)
 allFilter.addEventListener('change', () => setFilter('all'));
 activeFilter.addEventListener('change', () => setFilter('active'));
 completedFilter.addEventListener('change', () => setFilter('completed'));
+
+categoryFilter.addEventListener('change', function() {
+    let selectedCat = categoryFilter.value;
+    if(selectedCat !== 'None') {
+        renderTasks();
+    }
+    else {
+        renderTasks();
+    }
+});
+
 
 darkModeButton.addEventListener('click', function() {
     document.body.classList.toggle('dark-mode');

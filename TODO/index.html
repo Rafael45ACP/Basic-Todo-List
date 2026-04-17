@@ -10,6 +10,10 @@
         <input id="taskInput">
         <button id="addTask", type="submit"> Add Task</button>
         
+        <button id="DarkMode"> Dark Mode </button>
+        
+        <div id="filter">
+            <span> Filter: </span>
         <label for="ALL"> All </label>
         <input id="ALL" type="radio" name="filter" checked>
         <label for="ACTIVE"> Active </label>
@@ -17,12 +21,8 @@
         <label for="COMPLETED"> Completed </label>
         <input id="COMPLETED" type="radio" name="filter">
 
-        <span></span>
-
-        <button id="DarkMode"> Dark Mode </button>
-
-        <div>
-            <select id="sort">
+            <span> Category:</span>
+             <select id="filterCategory">
                 <option value="None">None</option>
                 <option value="School">School</option>
                 <option value="Personal">Personal</option>
@@ -30,9 +30,17 @@
             </select>
         </div>
 
-        <div id="date">
-                <input type="date" id="deadlineInput">
-        </div>
+      
+        <span> Category: </span>
+            <select id="sort">
+                <option value="None">None</option>
+                <option value="School">School</option>
+                <option value="Personal">Personal</option>
+                <option value="Gym">Gym</option>
+            </select>
+        <span> Deadline: </span>
+            <input type="date" id="deadlineInput">
+        
 
         <div id="TaskNumber">
                 <span id="totalCount">0</span> Total Tasks  /
