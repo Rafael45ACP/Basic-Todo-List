@@ -7,10 +7,24 @@
     <link rel="stylesheet" href="todo.css">
 
     <body>
+        <span >Task:</span>
         <input id="taskInput">
-        <button id="addTask", type="submit"> Add Task</button>
+        <span> Category: </span>
+        <select id="sort">
+            <option value="None">None</option>
+            <option value="School">School</option>
+            <option value="Personal">Personal</option>
+            <option value="Gym">Gym</option>
+        </select>
+        <span> Deadline: </span>
+
+        <input type="date" id="deadlineInput">
         
         <button id="DarkMode"> Dark Mode </button>
+        
+        <div> 
+        <button id="addTask", type="submit"> Add Task</button>
+        </div>
         
         <div id="filter">
             <span> Filter: </span>
@@ -31,15 +45,6 @@
         </div>
 
       
-        <span> Category: </span>
-            <select id="sort">
-                <option value="None">None</option>
-                <option value="School">School</option>
-                <option value="Personal">Personal</option>
-                <option value="Gym">Gym</option>
-            </select>
-        <span> Deadline: </span>
-            <input type="date" id="deadlineInput">
         
 
         <div id="TaskNumber">
