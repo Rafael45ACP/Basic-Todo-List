@@ -11,16 +11,39 @@ let completedFilter = document.getElementById('COMPLETED');
 
 let categoryFilter = document.getElementById('filterCategory');
 
+let UndoBTN = document.getElementById('Undo');
+let lastDeleted = null;
+
 let now = new Date();
 
 let darkModeButton = document.getElementById('DarkMode');
 let clearCompletedButton = document.getElementById('clearCompleted');
+
 
 clearCompletedButton.addEventListener('click', function() {
     tasks = tasks.filter(task => !task.done);
     saveTasks();
     renderTasks();
 });
+
+class Stack {
+    constructor() {
+        this.items = [];
+    }
+
+    push(item) {
+        this.items.push(item);
+    }
+
+    pop() {
+        return this.items.pop();
+    }
+    isEmpty() {
+        return this.items.length === 0;
+    }
+}
+
+let undoStack = new Stack();
 
 
 function numActiveTasks() {
@@ -135,6 +158,8 @@ function renderTasks() {
         let deleteButton = document.createElement('button');
         deleteButton.textContent = 'Delete';
         deleteButton.addEventListener('click', function() {
+            lastDeleted = tasks[index];
+            undoStack.push(lastDeleted);
             tasks.splice(index, 1);
             saveTasks();
             renderTasks();
@@ -221,7 +246,8 @@ function renderTasks() {
 
         li.draggable = true;
 
-        
+       
+
     });
 }
 
@@ -397,6 +423,19 @@ categoryFilter.addEventListener('change', function() {
     else {
         renderTasks();
     }
+});
+
+UndoBTN.addEventListener('click', function(){
+    if(!undoStack.isEmpty()) {
+        tasks.push(undoStack.pop());
+        saveTasks();
+        renderTasks();
+    }
+    else{
+        alert('No Task to Undo!');
+    }
+
+
 });
 
 
