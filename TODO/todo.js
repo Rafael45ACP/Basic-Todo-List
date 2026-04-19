@@ -160,6 +160,7 @@ function renderTasks() {
         deleteButton.addEventListener('click', function() {
             lastDeleted = tasks[index];
             undoStack.push(lastDeleted);
+            SaveUndoStack();            
             tasks.splice(index, 1);
             saveTasks();
             renderTasks();
@@ -428,6 +429,7 @@ categoryFilter.addEventListener('change', function() {
 UndoBTN.addEventListener('click', function(){
     if(!undoStack.isEmpty()) {
         tasks.push(undoStack.pop());
+        SaveUndoStack();
         saveTasks();
         renderTasks();
     }
@@ -438,6 +440,21 @@ UndoBTN.addEventListener('click', function(){
 
 });
 
+function SaveUndoStack()
+{
+    localStorage.setItem('undoStack', JSON.stringify(undoStack.items));
+}
+
+function loadUndoStack(){
+    let storedStack = localStorage.getItem('undoStack');
+    if(storedStack){
+        let items = JSON.parse(storedStack);
+        undoStack.items = [];
+        items.forEach(item => undoStack.push(item));
+    }
+
+}
+loadUndoStack();
 
 darkModeButton.addEventListener('click', function() {
     document.body.classList.toggle('dark-mode');
