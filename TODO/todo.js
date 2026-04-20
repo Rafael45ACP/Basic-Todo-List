@@ -153,6 +153,36 @@ function renderTasks() {
         completedCount.textContent = numCompletedTasks();
         totalCount.textContent = numTotalTasks();
 
+        let descButton = document.createElement('button');
+        
+
+        descButton.textContent = 'Add Description';
+        descButton.addEventListener('click', function(){
+            let descSpan = document.createElement('span');
+            let descInput = document.createElement('input');
+            descInput.placeholder = 'Enter description';
+            descInput.value = task.description || '';
+            descSpan.appendChild(descInput);
+            descInput.focus();
+
+            descInput.addEventListener('blur', function() {
+                let description = descInput.value.trim();
+                if(description !== null) {
+                    descSpan.textContent = `${task.description}`;
+                    saveTasks();
+                }
+            });
+            descInput.addEventListener('keydown', function(event){
+                if(event.key === 'Enter') {
+                    descSpan.textContent = descInput.value.trim();
+                    saveTasks();
+                }
+
+            });
+            li.appendChild(descSpan);
+            
+        });
+
         let div = document.createElement('div');
 
         let deleteButton = document.createElement('button');
@@ -228,10 +258,11 @@ function renderTasks() {
             
         }
 
+        li.appendChild(descButton);
 
         li.appendChild(div);
         div.appendChild(deleteButton);
-        // li.appendChild(descButton);
+    
 
 
 
