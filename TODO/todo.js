@@ -154,32 +154,35 @@ function renderTasks() {
         totalCount.textContent = numTotalTasks();
 
         let descButton = document.createElement('button');
-        
-
         descButton.textContent = 'Add Description';
+
         descButton.addEventListener('click', function(){
+
+            let existingInput = li.querySelector('.desc');
+            if(existingInput) existingInput.remove();
+            
             let descSpan = document.createElement('span');
+            descSpan.classList.add('desc');
+
             let descInput = document.createElement('input');
             descInput.placeholder = 'Enter description';
             descInput.value = task.description || '';
-            descSpan.appendChild(descInput);
-            descInput.focus();
-
-            descInput.addEventListener('blur', function() {
-                let description = descInput.value.trim();
-                if(description !== null) {
-                    descSpan.textContent = `${task.description}`;
-                    saveTasks();
-                }
+            
+            descInput.addEventListener('blur', function(){
+                let currentDesc = descInput.value.trim();
+                task.description = currentDest;
+                descSpan.TextContent = currentDesc;
+                saveTasks(); 
             });
             descInput.addEventListener('keydown', function(event){
                 if(event.key === 'Enter') {
+                    task.description = descInput.value.trim();
                     descSpan.textContent = descInput.value.trim();
-                    saveTasks();
+                    saveTasks();   
                 }
-
             });
             li.appendChild(descSpan);
+            descSpan.appendChild(descInput);
             
         });
 
