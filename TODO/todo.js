@@ -14,8 +14,6 @@ let categoryFilter = document.getElementById('filterCategory');
 let UndoBTN = document.getElementById('Undo');
 let lastDeleted = null;
 
-let now = new Date();
-
 let darkModeButton = document.getElementById('DarkMode');
 let clearCompletedButton = document.getElementById('clearCompleted');
 
@@ -108,6 +106,8 @@ function renderTasks() {
         if (filter === 'active' && task.done) return;
         if (filter === 'completed' && !task.done) return;
         if(categoryFilter.value !== 'None' && task.category !== categoryFilter.value) return;
+
+        let now = new Date();
         
         let li = document.createElement('li');
         li.classList.add('task-item','enter');
@@ -154,7 +154,9 @@ function renderTasks() {
         totalCount.textContent = numTotalTasks();
 
         let descButton = document.createElement('button');
-        descButton.textContent = 'Add Description';
+       descButton.textContent = task.description 
+        ? 'Show Description' 
+        : 'Add Description';
 
         descButton.addEventListener('click', function(){
 
@@ -170,21 +172,25 @@ function renderTasks() {
             
             descInput.addEventListener('blur', function(){
                 let currentDesc = descInput.value.trim();
-                task.description = currentDest;
-                descSpan.TextContent = currentDesc;
+                task.description = currentDesc;
+                descSpan.textContent = currentDesc;
                 saveTasks(); 
             });
             descInput.addEventListener('keydown', function(event){
                 if(event.key === 'Enter') {
-                    task.description = descInput.value.trim();
-                    descSpan.textContent = descInput.value.trim();
-                    saveTasks();   
+                    let currentDesc = descInput.value.trim();
+                    task.description = currentDesc;
+                    descSpan.textContent = currentDesc;
+                    descButton.textContent = task.description ? 'Show Description' : 'Add Description';
+                    saveTasks();
+                    renderTasks();
                 }
             });
             li.appendChild(descSpan);
             descSpan.appendChild(descInput);
             
         });
+        
 
         let div = document.createElement('div');
 
@@ -296,7 +302,7 @@ function addTask() {
     let deadline = document.getElementById('deadlineInput').value;
 
 
-    tasks.push({ text: value, done: false, category: category, deadline: deadline });
+    tasks.push({ text: value, done: false, category: category, deadline: deadline, description: '' });
     saveTasks();
     renderTasks();
     input.value = '';
