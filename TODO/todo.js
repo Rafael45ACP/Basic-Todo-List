@@ -154,46 +154,52 @@ function renderTasks() {
         totalCount.textContent = numTotalTasks();
 
         let descButton = document.createElement('button');
-       descButton.textContent = task.description 
-        ? 'Show Description' 
-        : 'Add Description';
+        descButton.textContent = task.description
+            ? (task.showDesc ? 'Hide Description' : 'Show Description')
+            : 'Add Description';
 
-        descButton.addEventListener('click', function(){
+        descButton.addEventListener('click', function () {
 
-            let existingInput = li.querySelector('.desc');
-            if(existingInput) existingInput.remove();
-            
-            let descSpan = document.createElement('span');
-            descSpan.classList.add('desc');
+            // If NO description yet → create one
+            if (!task.description) {
+                let descInput = document.createElement('input');
+                descInput.placeholder = 'Enter description';
 
-            let descInput = document.createElement('input');
-            descInput.placeholder = 'Enter description';
-            descInput.value = task.description || '';
-            
-            descInput.addEventListener('blur', function(){
-                let currentDesc = descInput.value.trim();
-                task.description = currentDesc;
-                descSpan.textContent = currentDesc;
-                saveTasks(); 
-            });
-            descInput.addEventListener('keydown', function(event){
-                if(event.key === 'Enter') {
-                    let currentDesc = descInput.value.trim();
-                    task.description = currentDesc;
-                    descSpan.textContent = currentDesc;
-                    descButton.textContent = task.description ? 'Show Description' : 'Add Description';
+                li.appendChild(descInput);
+                descInput.focus();
+
+                descInput.addEventListener('keydown', function (event) {
+                    if (event.key === 'Enter') {
+                        task.description = descInput.value.trim();
+                        task.showDesc = true;
+
+                        saveTasks();
+                        renderTasks();
+                    }
+                });
+
+                descInput.addEventListener('blur', function () {
+                    task.description = descInput.value.trim();
+                    task.showDesc = true;
+
                     saveTasks();
                     renderTasks();
-                }
-            });
-            li.appendChild(descSpan);
-            descSpan.appendChild(descInput);
-            
+                });
+
+                return;
+            }
+
+            // Otherwise → toggle visibility
+            task.showDesc = !task.showDesc;
+
+            saveTasks();
+            renderTasks();
         });
+
         
-
+        
         let div = document.createElement('div');
-
+        
         let deleteButton = document.createElement('button');
         deleteButton.textContent = 'Delete';
         deleteButton.addEventListener('click', function() {
@@ -252,7 +258,7 @@ function renderTasks() {
                     timeleftSpan.style.color = 'red';
                 }
                 else if (timeLeft <= 24 * 60 * 60 * 1000 && !task.done) {
-                timeleftSpan.style.color = 'orange';
+                    timeleftSpan.style.color = 'orange';
                 }
                 else if (timeLeft <= 3 * 24 * 60 * 60 * 1000 && !task.done) {
                     timeleftSpan.style.color = 'yellow';
@@ -265,10 +271,19 @@ function renderTasks() {
                 }
                 li.appendChild(timeleftSpan);
             
-        }
+            }
 
         li.appendChild(descButton);
 
+        if (task.description && task.showDesc) {
+            let descText = document.createElement('span');
+            descText.textContent = ' - ' + task.description;
+            descText.style.fontStyle = 'italic';
+            let br = document.createElement('br');
+
+            li.appendChild(br);
+            li.appendChild(descText);
+        }
         li.appendChild(div);
         div.appendChild(deleteButton);
     
@@ -302,7 +317,9 @@ function addTask() {
     let deadline = document.getElementById('deadlineInput').value;
 
 
-    tasks.push({ text: value, done: false, category: category, deadline: deadline, description: '' });
+    tasks.push({ text: value, done: false, category: category, deadline: deadline, description: '',
+        showDesc: false
+     });
     saveTasks();
     renderTasks();
     input.value = '';
