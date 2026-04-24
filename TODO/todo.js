@@ -18,7 +18,7 @@ let darkModeButton = document.getElementById('DarkMode');
 let clearCompletedButton = document.getElementById('clearCompleted');
 
 
-clearCompletedButton.addEventListener('click', function() {
+clearCompletedButton.addEventListener('click', function () {
     tasks = tasks.filter(task => !task.done);
     saveTasks();
     renderTasks();
@@ -59,7 +59,7 @@ function numTotalTasks() {
 
 
 
-function getPositions(){
+function getPositions() {
     let items = document.querySelectorAll('#todo li');
     let map = new Map();
     items.forEach((item => {
@@ -71,19 +71,19 @@ function getPositions(){
     return map;
 }
 
-function animateFlip(oldPositions){
+function animateFlip(oldPositions) {
     let items = document.querySelectorAll('#todo li');
     items.forEach(item => {
         let index = item.dataset.index;
         let old = oldPositions.get(index);
         let newRect = item.getBoundingClientRect();
 
-        if(!old) return;
+        if (!old) return;
 
         let deltaX = old.left - newRect.left;
         let deltaY = old.top - newRect.top;
 
-        if(deltaX || deltaY) {
+        if (deltaX || deltaY) {
             item.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
             item.style.transition = 'transform 0s';
 
@@ -91,8 +91,8 @@ function animateFlip(oldPositions){
                 item.style.transform = '';
                 item.style.transition = 'transform 200ms ease';
             });
-}
-});
+        }
+    });
 }
 
 function saveTasks() {
@@ -105,31 +105,31 @@ function renderTasks() {
 
         if (filter === 'active' && task.done) return;
         if (filter === 'completed' && !task.done) return;
-        if(categoryFilter.value !== 'None' && task.category !== categoryFilter.value) return;
+        if (categoryFilter.value !== 'None' && task.category !== categoryFilter.value) return;
 
         let now = new Date();
-        
+
         let li = document.createElement('li');
-        li.classList.add('task-item','enter');
+        li.classList.add('task-item', 'enter');
         let checkbox = document.createElement('input');
         checkbox.type = 'checkbox';
         checkbox.checked = task.done;
-         
+
         li.classList.add('task-item');
-        
+
         let span = document.createElement('span');
         span.textContent = task.text;
 
         let categorySpan = document.createElement('span');
         categorySpan.textContent = ` [${task.category}]`;
         categorySpan.style.fontStyle = 'italic';
-        if(task.category === 'Gym') {
+        if (task.category === 'Gym') {
             categorySpan.style.color = 'blue';
         }
-        else if(task.category === 'Personal') {
-        categorySpan.style.color = 'green';
+        else if (task.category === 'Personal') {
+            categorySpan.style.color = 'green';
         }
-        else if(task.category === 'School') {
+        else if (task.category === 'School') {
             categorySpan.style.color = 'yellow';
         }
         else {
@@ -144,7 +144,7 @@ function renderTasks() {
         }
 
         let timeleftSpan = document.createElement('span');
-        
+
         let activeCount = document.getElementById('activeCount');
         let completedCount = document.getElementById('completedCount');
         let totalCount = document.getElementById('totalCount');
@@ -196,24 +196,24 @@ function renderTasks() {
             renderTasks();
         });
 
-        
-        
+
+
         let div = document.createElement('div');
-        
+
         let deleteButton = document.createElement('button');
         deleteButton.textContent = 'Delete';
-        deleteButton.addEventListener('click', function() {
+        deleteButton.addEventListener('click', function () {
             lastDeleted = tasks[index];
             undoStack.push(lastDeleted);
-            SaveUndoStack();            
+            SaveUndoStack();
             tasks.splice(index, 1);
             saveTasks();
             renderTasks();
         });
 
-        
 
-      
+
+
 
         li.appendChild(checkbox);
         li.appendChild(span);
@@ -223,7 +223,7 @@ function renderTasks() {
             deadline.setHours(23, 59, 59);
             deadlineSpan.textContent = ` (Deadline: ${task.deadline})`;
             deadlineSpan.style.fontStyle = 'Bold';
-            
+
             if (deadline.toDateString() > now.toDateString() || task.done) {
                 deadlineSpan.style.color = 'green';
             }
@@ -235,8 +235,8 @@ function renderTasks() {
                 deadlineSpan.style.color = 'orange';
                 console.log('Deadline is today!');
             }
-            
-            if(task.done) {
+
+            if (task.done) {
                 deadlineSpan.style.color = 'grey';
             }
 
@@ -246,32 +246,32 @@ function renderTasks() {
             let deadline = new Date(task.deadline);
             deadline.setHours(23, 59, 59);
             let timeLeft = deadline - now;
-            
-                let days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
-                let hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                let minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
-                timeleftSpan.textContent = ` (${days}d ${hours}h ${minutes}m left)`;
-                timeleftSpan.style.fontWeight = 'bold';
-                
-                if (timeLeft < 0 && !task.done) {
-                    timeleftSpan.textContent = ' (Overdue)';
-                    timeleftSpan.style.color = 'red';
-                }
-                else if (timeLeft <= 24 * 60 * 60 * 1000 && !task.done) {
-                    timeleftSpan.style.color = 'orange';
-                }
-                else if (timeLeft <= 3 * 24 * 60 * 60 * 1000 && !task.done) {
-                    timeleftSpan.style.color = 'yellow';
-                }
-                else if(task.done){
-                    timeleftSpan.textContent = '';
-                }
-                else {
-                    timeleftSpan.style.color = 'green';
-                }
-                li.appendChild(timeleftSpan);
-            
+
+            let days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            let hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            let minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            timeleftSpan.textContent = ` (${days}d ${hours}h ${minutes}m left)`;
+            timeleftSpan.style.fontWeight = 'bold';
+
+            if (timeLeft < 0 && !task.done) {
+                timeleftSpan.textContent = ' (Overdue)';
+                timeleftSpan.style.color = 'red';
             }
+            else if (timeLeft <= 24 * 60 * 60 * 1000 && !task.done) {
+                timeleftSpan.style.color = 'orange';
+            }
+            else if (timeLeft <= 3 * 24 * 60 * 60 * 1000 && !task.done) {
+                timeleftSpan.style.color = 'yellow';
+            }
+            else if (task.done) {
+                timeleftSpan.textContent = '';
+            }
+            else {
+                timeleftSpan.style.color = 'green';
+            }
+            li.appendChild(timeleftSpan);
+
+        }
 
         li.appendChild(descButton);
 
@@ -280,13 +280,46 @@ function renderTasks() {
             descText.textContent = ' - ' + task.description;
             descText.style.fontStyle = 'italic';
             let br = document.createElement('br');
+            descText.classList.add('descText');
+
+            descText.addEventListener('dblclick', function () {
+                let editDescInput = document.createElement('input');
+                editDescInput.value = task.description;
+
+                descText.replaceWith(editDescInput);
+                editDescInput.focus();
+
+                editDescInput.addEventListener('blur', function () {
+                    let newDescVal = editDescInput.value.trim();
+                    if (newDescVal) {
+                        task.description = newDescVal;
+                    }
+                    else{
+                        task.description = '';
+                        showDesc = false;
+                    }
+                    saveTasks();
+                    renderTasks();
+                });
+
+                editDescInput.addEventListener('keydown', function (event) {
+                    if (event.key === 'Enter') {
+                        editDescInput.blur();
+                    }
+                    if (event.key === 'Escape') {
+                        renderTasks();
+                    }
+                });
+            });
 
             li.appendChild(br);
             li.appendChild(descText);
+
+
         }
         li.appendChild(div);
         div.appendChild(deleteButton);
-    
+
 
 
 
@@ -296,20 +329,20 @@ function renderTasks() {
             li.classList.add('enter-active');
         });
 
-        li.addEventListener('transitionend', function() {
+        li.addEventListener('transitionend', function () {
             li.classList.remove('enter', 'enter-active');
         }, { once: true });
 
         li.draggable = true;
 
-       
+
 
     });
 }
 
 function addTask() {
     let value = input.value.trim();
-    if(!value) {
+    if (!value) {
         alert('Please enter a task.');
         return;
     }
@@ -317,9 +350,10 @@ function addTask() {
     let deadline = document.getElementById('deadlineInput').value;
 
 
-    tasks.push({ text: value, done: false, category: category, deadline: deadline, description: '',
+    tasks.push({
+        text: value, done: false, category: category, deadline: deadline, description: '',
         showDesc: false
-     });
+    });
     saveTasks();
     renderTasks();
     input.value = '';
@@ -327,14 +361,14 @@ function addTask() {
 
 button.addEventListener('click', addTask);
 
-input.addEventListener('keydown', function(event) {
+input.addEventListener('keydown', function (event) {
     if (event.key === 'Enter') {
         addTask();
     }
 });
 
 
-ul.addEventListener('mouseover', function(event) {
+ul.addEventListener('mouseover', function (event) {
     let li = event.target.closest('li');
     if (li && localStorage.getItem('darkMode') === 'enabled') {
         li.style.backgroundColor = 'purple';
@@ -343,16 +377,16 @@ ul.addEventListener('mouseover', function(event) {
         li.style.backgroundColor = 'lightgray';
     }
 });
-ul.addEventListener('mouseout', function(event) {
+ul.addEventListener('mouseout', function (event) {
     let li = event.target.closest('li');
     if (li) {
         li.style.backgroundColor = '';
     }
 });
 
-ul.addEventListener('change', function(event) {
+ul.addEventListener('change', function (event) {
     if (event.target.type === 'checkbox') {
-        
+
         let li = event.target.closest('li');
         let index = li.dataset.index;
         let span = event.target.nextElementSibling;
@@ -372,7 +406,7 @@ ul.addEventListener('change', function(event) {
     }
 });
 
-ul.addEventListener('dblclick', function(event) {
+ul.addEventListener('dblclick', function (event) {
     if (event.target.tagName === 'SPAN') {
 
         let li = event.target.closest('li');
@@ -382,22 +416,22 @@ ul.addEventListener('dblclick', function(event) {
 
         let editInput = document.createElement('input');
         editInput.value = currentText;
-        
+
         event.target.replaceWith(editInput);
         editInput.focus();
 
-        editInput.addEventListener('blur', function() {
-            let newValue = editInput.value.trim() ;
+        editInput.addEventListener('blur', function () {
+            let newValue = editInput.value.trim();
             if (newValue != currentText) {
                 tasks[index].text = newValue;
                 tasks[index].done = false;
-                
+
             }
             saveTasks();
             renderTasks();
         });
 
-        editInput.addEventListener('keydown', function(event) {
+        editInput.addEventListener('keydown', function (event) {
             if (event.key === 'Enter') {
                 editInput.blur();
             }
@@ -405,7 +439,7 @@ ul.addEventListener('dblclick', function(event) {
     }
 });
 
-ul.addEventListener('dragstart', function(event) {
+ul.addEventListener('dragstart', function (event) {
     let li = event.target.closest('li');
     if (li) {
         draggedIndex = li.dataset.index;
@@ -413,14 +447,14 @@ ul.addEventListener('dragstart', function(event) {
     li.classList.add('dragging');
 });
 
-ul.addEventListener('dragend', function(event) {
+ul.addEventListener('dragend', function (event) {
     let li = event.target.closest('li');
     if (li) {
         li.classList.remove('dragging');
     }
 });
 
-ul.addEventListener('dragover', function(event) {
+ul.addEventListener('dragover', function (event) {
     event.preventDefault();
 
     let li = event.target.closest('li');
@@ -430,19 +464,19 @@ ul.addEventListener('dragover', function(event) {
     li.classList.add('over');
 });
 
-ul.addEventListener('drop', function(event) {
+ul.addEventListener('drop', function (event) {
     event.preventDefault();
     let li = event.target.closest('li');
     if (!li) return;
 
     let targetIndex = li.dataset.index;
-    
+
     let rect = li.getBoundingClientRect();
     let isBelow = event.clientY > rect.top + rect.height / 2;
 
     let draggedItem = tasks.splice(draggedIndex, 1)[0];
 
-    if(draggedIndex < targetIndex) {
+    if (draggedIndex < targetIndex) {
         targetIndex--;
     }
 
@@ -459,13 +493,12 @@ ul.addEventListener('drop', function(event) {
     animateFlip(oldPositions);
 });
 
-function setFilter(selectedFilter)
-{    
+function setFilter(selectedFilter) {
     filter = selectedFilter;
     allFilter.checked = selectedFilter === 'all';
     activeFilter.checked = selectedFilter === 'active';
     completedFilter.checked = selectedFilter === 'completed';
-  
+
     renderTasks();
 }
 
@@ -473,9 +506,9 @@ allFilter.addEventListener('change', () => setFilter('all'));
 activeFilter.addEventListener('change', () => setFilter('active'));
 completedFilter.addEventListener('change', () => setFilter('completed'));
 
-categoryFilter.addEventListener('change', function() {
+categoryFilter.addEventListener('change', function () {
     let selectedCat = categoryFilter.value;
-    if(selectedCat !== 'None') {
+    if (selectedCat !== 'None') {
         renderTasks();
     }
     else {
@@ -483,28 +516,27 @@ categoryFilter.addEventListener('change', function() {
     }
 });
 
-UndoBTN.addEventListener('click', function(){
-    if(!undoStack.isEmpty()) {
+UndoBTN.addEventListener('click', function () {
+    if (!undoStack.isEmpty()) {
         tasks.push(undoStack.pop());
         SaveUndoStack();
         saveTasks();
         renderTasks();
     }
-    else{
+    else {
         alert('No Task to Undo!');
     }
 
 
 });
 
-function SaveUndoStack()
-{
+function SaveUndoStack() {
     localStorage.setItem('undoStack', JSON.stringify(undoStack.items));
 }
 
-function loadUndoStack(){
+function loadUndoStack() {
     let storedStack = localStorage.getItem('undoStack');
-    if(storedStack){
+    if (storedStack) {
         let items = JSON.parse(storedStack);
         undoStack.items = [];
         items.forEach(item => undoStack.push(item));
@@ -513,11 +545,11 @@ function loadUndoStack(){
 }
 loadUndoStack();
 
-darkModeButton.addEventListener('click', function() {
+darkModeButton.addEventListener('click', function () {
     document.body.classList.toggle('dark-mode');
 
     localStorage.setItem(
-        'darkMode', 
+        'darkMode',
         document.body.classList.contains('dark-mode') ? 'enabled' : 'disabled'
     )
 });
