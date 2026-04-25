@@ -16,9 +16,19 @@ let lastDeleted = null;
 
 let darkModeButton = document.getElementById('DarkMode');
 let clearCompletedButton = document.getElementById('clearCompleted');
+clearCompletedButton.style.backgroundColor = 'red';
 
 
 clearCompletedButton.addEventListener('click', function () {
+    let completedTasks = tasks.filter(task => task.done);
+    if (completedTasks.length === 0) {
+        alert('No completed tasks to clear!');
+        return;
+    }
+    
+    completedTasks.forEach(task => undoStack.push(task));
+    SaveUndoStack();
+
     tasks = tasks.filter(task => !task.done);
     saveTasks();
     renderTasks();
@@ -188,8 +198,6 @@ function renderTasks() {
 
                 return;
             }
-
-            // Otherwise → toggle visibility
             task.showDesc = !task.showDesc;
 
             saveTasks();
@@ -202,6 +210,8 @@ function renderTasks() {
 
         let deleteButton = document.createElement('button');
         deleteButton.textContent = 'Delete';
+        deleteButton.style.color = 'red';
+        deleteButton.style.backgroundColor = 'transparent';
         deleteButton.addEventListener('click', function () {
             lastDeleted = tasks[index];
             undoStack.push(lastDeleted);
@@ -281,6 +291,19 @@ function renderTasks() {
             descText.style.fontStyle = 'italic';
             let br = document.createElement('br');
             descText.classList.add('descText');
+            let DelDescBtn = document.createElement('button');
+            DelDescBtn.textContent = 'Delete Description';
+
+            DelDescBtn.addEventListener('click', function(){
+                undoStack.push({ ...task });
+                SaveUndoStack();
+                task.description = "";
+                task.showDesc = false;
+                saveTasks();
+                renderTasks();
+
+            })
+
 
             descText.addEventListener('dblclick', function () {
                 let editDescInput = document.createElement('input');
@@ -296,7 +319,7 @@ function renderTasks() {
                     }
                     else{
                         task.description = '';
-                        showDesc = false;
+                        task.showDesc = false;
                     }
                     saveTasks();
                     renderTasks();
@@ -314,6 +337,7 @@ function renderTasks() {
 
             li.appendChild(br);
             li.appendChild(descText);
+            descText.appendChild(DelDescBtn);
 
 
         }
