@@ -214,7 +214,11 @@ function renderTasks() {
         deleteButton.style.backgroundColor = 'transparent';
         deleteButton.addEventListener('click', function () {
             lastDeleted = tasks[index];
-            undoStack.push(lastDeleted);
+            undoStack.push({ 
+                type: 'TaskDel',
+                index: index,
+                task: lastDeleted
+            });
             SaveUndoStack();
             tasks.splice(index, 1);
             saveTasks();
@@ -295,7 +299,11 @@ function renderTasks() {
             DelDescBtn.textContent = 'Delete Description';
 
             DelDescBtn.addEventListener('click', function(){
-                undoStack.push({ ...task });
+                undoStack.push({ 
+                    type: 'descDel',
+                    index: index,
+                    description: task.description
+                });
                 SaveUndoStack();
                 task.description = "";
                 task.showDesc = false;
@@ -327,6 +335,11 @@ function renderTasks() {
 
                 editDescInput.addEventListener('keydown', function (event) {
                     if (event.key === 'Enter') {
+                        undoStack.push({
+                            type: 'descEdit',
+                            index: index,
+                            oldDescription: task.description
+                        });
                         editDescInput.blur();
                     }
                     if (event.key === 'Escape') {
@@ -542,7 +555,17 @@ categoryFilter.addEventListener('change', function () {
 
 UndoBTN.addEventListener('click', function () {
     if (!undoStack.isEmpty()) {
-        tasks.push(undoStack.pop());
+        let lastAct = undoStack.pop();
+        if(lastAct.type === 'descDel'){
+            tasks[lastAct.index].description = lastAct.description;
+            tasks[lastAct.index].showDesc = true;
+        }
+        else if(lastAct.type === 'TaskDel'){
+            tasks.splice(lastAct.index, 0, lastAct.task);            
+        }
+        else if(lastAct.type === 'descEdit'){
+            tasks[lastAct.index].description = lastAct.oldDescription;
+        }
         SaveUndoStack();
         saveTasks();
         renderTasks();
