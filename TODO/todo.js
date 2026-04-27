@@ -391,6 +391,11 @@ function addTask() {
         text: value, done: false, category: category, deadline: deadline, description: '',
         showDesc: false
     });
+    undoStack.push({
+        type: 'addTask',
+        task: tasks[tasks.length - 1]
+    });
+    SaveUndoStack();
     saveTasks();
     renderTasks();
     input.value = '';
@@ -462,6 +467,11 @@ ul.addEventListener('dblclick', function (event) {
             if (newValue != currentText) {
                 tasks[index].text = newValue;
                 tasks[index].done = false;
+                undoStack.push({
+                    type: 'taskEdit',
+                    index: index,
+                    oldtext: currentText
+                })
 
             }
             saveTasks();
@@ -565,6 +575,12 @@ UndoBTN.addEventListener('click', function () {
         }
         else if(lastAct.type === 'descEdit'){
             tasks[lastAct.index].description = lastAct.oldDescription;
+        }
+        else if(lastAct.type === 'addTask'){
+            tasks.pop();
+        }
+        else if(lastAct.type === 'taskEdit'){
+            tasks[lastAct.index].text = lastAct.oldtext;
         }
         SaveUndoStack();
         saveTasks();
