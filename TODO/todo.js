@@ -111,11 +111,15 @@ function saveTasks() {
 
 function renderTasks() {
     ul.innerHTML = '';
+    tasks.sort((a, b ) => b.pinned - a.pinned );
     tasks.forEach((task, index) => {
 
         if (filter === 'active' && task.done) return;
         if (filter === 'completed' && !task.done) return;
         if (categoryFilter.value !== 'None' && task.category !== categoryFilter.value) return;
+        if(task.pinned === undefined) {
+            tasks.pinned = false;
+        }
 
         let now = new Date();
 
@@ -225,10 +229,25 @@ function renderTasks() {
             renderTasks();
         });
 
+        let pinBtn = document.createElement('button');
+        pinBtn.textContent = task.pinned ? '📌 Unpin' : '📍 Pin';
+        pinBtn.style.backgroundColor = 'transparent';
+
+        pinBtn.addEventListener('click', function(){
+            task.pinned = !task.pinned;
+
+            saveTasks();
+            renderTasks();
+
+        })
+
+        if(task.pinned){
+            li.style.borderLeft = '4px solid gold';
+        }
 
 
 
-
+        li.appendChild(pinBtn);
         li.appendChild(checkbox);
         li.appendChild(span);
         li.appendChild(categorySpan);
@@ -388,8 +407,13 @@ function addTask() {
 
 
     tasks.push({
-        text: value, done: false, category: category, deadline: deadline, description: '',
-        showDesc: false
+        text: value, 
+        done: false, 
+        category: category,
+        deadline: deadline,
+        description: '',
+        showDesc: false,
+        pinned: false
     });
     undoStack.push({
         type: 'addTask',
