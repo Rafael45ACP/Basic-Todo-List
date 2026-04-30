@@ -54,3 +54,24 @@ input, button{
     color: white;
     border: 1px solid #555555;
 }
+.DelDescBtn{
+    margin-left: 10px;
+}
+.pinBtn{
+    margin-right: 10px;
+    margin-left: 10px;
+}
+.deleteBtn{
+    margin-left: 10px;
+}
+.descBtn{
+    margin-left: 10px;
+}
+
+.category{
+    margin-left: 15px;
+    margin-right: 5px;
+}
+.addTask{
+    margin-top: 50px;
+}

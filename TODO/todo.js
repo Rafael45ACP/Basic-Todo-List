@@ -168,6 +168,7 @@ function renderTasks() {
         totalCount.textContent = numTotalTasks();
 
         let descButton = document.createElement('button');
+        descButton.classList.add('descBtn');
         descButton.textContent = task.description
             ? (task.showDesc ? 'Hide Description' : 'Show Description')
             : 'Add Description';
@@ -213,6 +214,7 @@ function renderTasks() {
         let div = document.createElement('div');
 
         let deleteButton = document.createElement('button');
+        deleteButton.classList.add('deleteBtn');
         deleteButton.textContent = 'Delete';
         deleteButton.style.color = 'red';
         deleteButton.style.backgroundColor = 'transparent';
@@ -236,6 +238,7 @@ function renderTasks() {
         });
 
         let pinBtn = document.createElement('button');
+        pinBtn.classList.add('pinBtn');
         pinBtn.textContent = task.pinned ? '📌 Unpin' : '📍 Pin';
         pinBtn.style.backgroundColor = 'transparent';
 
@@ -248,7 +251,7 @@ function renderTasks() {
         })
 
         if(task.pinned){
-            li.style.borderLeft = '4px solid gold';
+            li.style.borderLeft = '4px solid green';
         }
 
 
@@ -321,6 +324,7 @@ function renderTasks() {
             let br = document.createElement('br');
             descText.classList.add('descText');
             let DelDescBtn = document.createElement('button');
+            DelDescBtn.classList.add('DelDescBtn');
             DelDescBtn.textContent = 'Delete Description';
 
             DelDescBtn.addEventListener('click', function(){
