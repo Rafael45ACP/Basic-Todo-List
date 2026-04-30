@@ -217,6 +217,8 @@ function renderTasks() {
         deleteButton.style.color = 'red';
         deleteButton.style.backgroundColor = 'transparent';
         deleteButton.addEventListener('click', function () {
+            if(!task.pinned)
+            {
             lastDeleted = tasks[index];
             undoStack.push({ 
                 type: 'TaskDel',
@@ -227,6 +229,10 @@ function renderTasks() {
             tasks.splice(index, 1);
             saveTasks();
             renderTasks();
+            }
+            else{
+                alert('Can\'t delete pinned tasks!')
+            }
         });
 
         let pinBtn = document.createElement('button');
