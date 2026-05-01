@@ -75,3 +75,9 @@ input, button{
 .addTask{
     margin-top: 50px;
 }
+.exportBtn{
+    float: right;
+}
+.importInput{
+    float: right;
+}

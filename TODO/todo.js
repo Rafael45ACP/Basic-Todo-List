@@ -18,6 +18,49 @@ let darkModeButton = document.getElementById('DarkMode');
 let clearCompletedButton = document.getElementById('clearCompleted');
 clearCompletedButton.style.backgroundColor = 'red';
 
+let exportBtn = document.getElementById('Export');
+exportBtn.classList.add('exportBtn');
+
+exportBtn.addEventListener('click', function() {
+    let dataStr = JSON.stringify(tasks, null, 2);
+    let blob = new Blob([dataStr], { type: 'application/json' });
+    let url = URL.createObjectURL(blob);
+
+    let a = document.createElement('a');
+    a.href = url;
+    a.download = 'tasks-backup.json';
+    a.click();
+    
+    URL.revokeObjectURL(url);
+});
+
+let importInput = document.getElementById('Import');
+importInput.classList.add('importInput');
+
+importInput.addEventListener('change', function(event) {
+    let file = event.target.files[0];
+    if (!file) return;
+
+    let reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            let importedTasks = JSON.parse(e.target.result);
+            if (!Array.isArray(importedTasks)) {
+                alert('Invalid file format!');
+                return;
+            }
+            tasks = tasks.concat(importedTasks);
+            saveTasks();
+            renderTasks();
+
+            alert('Tasks imported successfully!');
+        } catch (err) {
+            alert('Error reading file: ' + err.message);
+        }
+    };
+    reader.readAsText(file);
+});
+
 
 clearCompletedButton.addEventListener('click', function () {
     let completedTasks = tasks.filter(task => task.done);
