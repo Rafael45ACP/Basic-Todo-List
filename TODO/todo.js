@@ -49,7 +49,13 @@ importInput.addEventListener('change', function(event) {
                 alert('Invalid file format!');
                 return;
             }
-            tasks = tasks.concat(importedTasks);
+            let uniqueIds = new Set(tasks.map(t => t.id));
+            importedTasks.forEach(task => {
+                if(!uniqueIds.has(task.id)) {
+                    tasks.push(task);
+                    uniqueIds.add(task.id);
+                }
+            });
             saveTasks();
             renderTasks();
 
@@ -162,6 +168,10 @@ function renderTasks() {
         if (categoryFilter.value !== 'None' && task.category !== categoryFilter.value) return;
         if(task.pinned === undefined) {
             tasks.pinned = false;
+        }
+
+        if(!task.id){
+            task.id = Date.now() + Math.random();
         }
 
         let now = new Date();
@@ -460,6 +470,7 @@ function addTask() {
 
 
     tasks.push({
+        id: Date.now(),
         text: value, 
         done: false, 
         category: category,
