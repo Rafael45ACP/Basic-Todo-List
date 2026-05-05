@@ -563,6 +563,7 @@ ul.addEventListener('dblclick', function (event) {
                 })
 
             }
+
             saveTasks();
             renderTasks();
         });
@@ -658,18 +659,48 @@ UndoBTN.addEventListener('click', function () {
         if(lastAct.type === 'descDel'){
             tasks[lastAct.index].description = lastAct.description;
             tasks[lastAct.index].showDesc = true;
+
+            redoStack.push({
+                type: 'descDel',
+                index: lastAct.index,
+                description: lastAct.description
+            });
+            SaveRedoStack();
         }
         else if(lastAct.type === 'TaskDel'){
-            tasks.splice(lastAct.index, 0, lastAct.task);            
+            tasks.splice(lastAct.index, 0, lastAct.task);    
+            redoStack.push({
+                type: 'TaskDel',
+                index: lastAct.index,
+                task: lastAct.task
+            });
+            SaveRedoStack();        
         }
         else if(lastAct.type === 'descEdit'){
             tasks[lastAct.index].description = lastAct.oldDescription;
+            redoStack.push({
+                type: 'descEdit',
+                index: lastAct.index,
+                newDescription: tasks[lastAct.index].description
+            });
+            SaveRedoStack();
         }
         else if(lastAct.type === 'addTask'){
             tasks.pop();
+            redoStack.push({
+                type: 'addTask',
+                task: lastAct.task
+            });
+            SaveRedoStack();
         }
         else if(lastAct.type === 'taskEdit'){
             tasks[lastAct.index].text = lastAct.oldtext;
+            redoStack.push({
+                type: 'taskEdit',
+                index: lastAct.index,
+                newText: tasks[lastAct.index].text
+            });
+            SaveRedoStack();
         }
         SaveUndoStack();
         saveTasks();
@@ -681,6 +712,50 @@ UndoBTN.addEventListener('click', function () {
 
 
 });
+
+let redoBtn = document.getElementById('Redo');
+
+redoBtn.addEventListener('click', function(){
+    if(!redo.isEmpty()){
+        let lastRedo = redoStack.pop();
+        if(lastRedo.type === 'descDel'){
+            tasks[lastRedo.index].description = '';
+            tasks[lastRedo.index].showDesc = false;
+        }
+        else if(lastRedo.type === 'TaskDel'){
+            tasks.splice(lastRedo.index, 1);            
+        }
+        else if(lastRedo.type === 'descEdit'){
+            tasks[lastRedo.index].description = lastRedo.newDescription;
+        }
+        else if(lastRedo.type === 'addTask'){
+            tasks.push(lastRedo.task);
+        }
+        else if(lastRedo.type === 'taskEdit'){
+            tasks[lastRedo.index].text = lastRedo.newText;
+        }
+        saveTasks();
+        renderTasks();
+    }
+    else{
+        alert('No Task to Redo!');
+    }
+});
+
+function SaveRedoStack() {
+    localStorage.setItem('redoStack', JSON.stringify(redoStack.items));
+}
+
+function loadRedoStack() {
+    let storedStack = localStorage.getItem('redoStack');
+    if (storedStack) {
+        let items = JSON.parse(storedStack);
+        redoStack.items = [];
+        items.forEach(item => redoStack.push(item));
+    }
+
+}
+loadRedoStack();
 
 function SaveUndoStack() {
     localStorage.setItem('undoStack', JSON.stringify(undoStack.items));
