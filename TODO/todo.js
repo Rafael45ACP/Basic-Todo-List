@@ -101,6 +101,7 @@ class Stack {
 }
 
 let undoStack = new Stack();
+let redoStack = new Stack();
 
 
 function numActiveTasks() {
