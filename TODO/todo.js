@@ -103,6 +103,8 @@ class Stack {
 let undoStack = new Stack();
 let redoStack = new Stack();
 
+let RedoBtn = document.getElementById('Redo');
+
 
 function numActiveTasks() {
     return tasks.filter(task => !task.done).length;
@@ -277,10 +279,11 @@ function renderTasks() {
             {
             lastDeleted = tasks[index];
             undoStack.push({ 
-                type: 'TaskDel',
+                type: 'taskDel',
                 index: index,
-                task: lastDeleted
+                task: tasks[index]
             });
+            clearRedo();
             SaveUndoStack();
             tasks.splice(index, 1);
             saveTasks();
@@ -385,8 +388,10 @@ function renderTasks() {
                 undoStack.push({ 
                     type: 'descDel',
                     index: index,
-                    description: task.description
+                    actiondescription: task.description
                 });
+
+                clearRedo();
                 SaveUndoStack();
                 task.description = "";
                 task.showDesc = false;
@@ -423,6 +428,8 @@ function renderTasks() {
                             index: index,
                             oldDescription: task.description
                         });
+                        clearRedo();
+                        SaveUndoStack();
                         editDescInput.blur();
                     }
                     if (event.key === 'Escape') {
@@ -482,8 +489,11 @@ function addTask() {
     });
     undoStack.push({
         type: 'addTask',
-        task: tasks[tasks.length - 1]
+        index : tasks.length - 1,
+        task: newTask
     });
+
+    clearRedo();
     SaveUndoStack();
     saveTasks();
     renderTasks();
@@ -653,94 +663,82 @@ categoryFilter.addEventListener('change', function () {
     }
 });
 
+function clearRedo() {
+    redoStack.items = [];
+    SaveRedoStack();
+}
+
 UndoBTN.addEventListener('click', function () {
-    if (!undoStack.isEmpty()) {
-        let lastAct = undoStack.pop();
-        if(lastAct.type === 'descDel'){
-            tasks[lastAct.index].description = lastAct.description;
-            tasks[lastAct.index].showDesc = true;
+    if(!undoStack.isEmpty()){
+        let action = undoStack.pop();
 
-            redoStack.push({
-                type: 'descDel',
-                index: lastAct.index,
-                description: lastAct.description
-            });
-            SaveRedoStack();
-        }
-        else if(lastAct.type === 'TaskDel'){
-            tasks.splice(lastAct.index, 0, lastAct.task);    
-            redoStack.push({
-                type: 'TaskDel',
-                index: lastAct.index,
-                task: lastAct.task
-            });
-            SaveRedoStack();        
-        }
-        else if(lastAct.type === 'descEdit'){
-            tasks[lastAct.index].description = lastAct.oldDescription;
-            redoStack.push({
-                type: 'descEdit',
-                index: lastAct.index,
-                newDescription: tasks[lastAct.index].description
-            });
-            SaveRedoStack();
-        }
-        else if(lastAct.type === 'addTask'){
-            tasks.pop();
-            redoStack.push({
-                type: 'addTask',
-                task: lastAct.task
-            });
-            SaveRedoStack();
-        }
-        else if(lastAct.type === 'taskEdit'){
-            tasks[lastAct.index].text = lastAct.oldtext;
-            redoStack.push({
-                type: 'taskEdit',
-                index: lastAct.index,
-                newText: tasks[lastAct.index].text
-            });
-            SaveRedoStack();
-        }
+        applyUndo(action);
+
+        redoStack.push(action);
+
         SaveUndoStack();
-        saveTasks();
-        renderTasks();
-    }
-    else {
-        alert('No Task to Undo!');
-    }
-
-
-});
-
-let redoBtn = document.getElementById('Redo');
-
-redoBtn.addEventListener('click', function(){
-    if(!redo.isEmpty()){
-        let lastRedo = redoStack.pop();
-        if(lastRedo.type === 'descDel'){
-            tasks[lastRedo.index].description = '';
-            tasks[lastRedo.index].showDesc = false;
-        }
-        else if(lastRedo.type === 'TaskDel'){
-            tasks.splice(lastRedo.index, 1);            
-        }
-        else if(lastRedo.type === 'descEdit'){
-            tasks[lastRedo.index].description = lastRedo.newDescription;
-        }
-        else if(lastRedo.type === 'addTask'){
-            tasks.push(lastRedo.task);
-        }
-        else if(lastRedo.type === 'taskEdit'){
-            tasks[lastRedo.index].text = lastRedo.newText;
-        }
+        SaveRedoStack();
         saveTasks();
         renderTasks();
     }
     else{
-        alert('No Task to Redo!');
+        alert('No Task to Undo!');
     }
 });
+
+RedoBtn.addEventListener('click', function(){
+    if(!redoStack.isEmpty()){
+        let action = redoStack.pop();
+
+        applyRedo(action);
+        
+        undoStack.push(action);
+
+        SaveUndoStack();
+        SaveRedoStack();
+        saveTasks();
+        renderTasks();
+    }
+    else {
+        alert('No Task to Redo!');
+    }
+})
+
+function applyUndo(action) {
+    if(action.type === 'addTask'){
+        tasks.splice(action.index,1);
+    }
+       
+    else if(action.type === 'descDel'){
+        tasks[action.index].description = action.description;   
+        tasks[action.index].showDesc = true;
+    }
+    else if(action.type === 'descEdit'){
+        tasks[action.index].description = action.oldDescription;     
+    }
+    else if(action.type === 'taskDel'){
+         tasks.splice(action.index, 0, action.task);
+    }
+    else if(action.type === 'delDesc'){
+            tasks[action.index].description = action.description;
+    }
+}
+
+function applyRedo(action) {
+    if(action.type === 'addTask'){
+        tasks.splice(action.index, 0, action.task);
+    }
+    else if(action.type === 'descDel'){
+        tasks[action.index].description = '';
+        tasks[action.index].showDesc = false;
+    }
+    else if(action.type === 'descEdit'){
+
+    }
+    else if(action.type === 'taskDel'){
+        tasks.splice(action.index, 1);
+    }
+}
 
 function SaveRedoStack() {
     localStorage.setItem('redoStack', JSON.stringify(redoStack.items));
