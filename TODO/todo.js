@@ -21,7 +21,7 @@ clearCompletedButton.style.backgroundColor = 'red';
 let exportBtn = document.getElementById('Export');
 exportBtn.classList.add('exportBtn');
 
-exportBtn.addEventListener('click', function() {
+exportBtn.addEventListener('click', function () {
     let dataStr = JSON.stringify(tasks, null, 2);
     let blob = new Blob([dataStr], { type: 'application/json' });
     let url = URL.createObjectURL(blob);
@@ -30,19 +30,19 @@ exportBtn.addEventListener('click', function() {
     a.href = url;
     a.download = 'tasks-backup.json';
     a.click();
-    
+
     URL.revokeObjectURL(url);
 });
 
 let importInput = document.getElementById('Import');
 importInput.classList.add('importInput');
 
-importInput.addEventListener('change', function(event) {
+importInput.addEventListener('change', function (event) {
     let file = event.target.files[0];
     if (!file) return;
 
     let reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = function (e) {
         try {
             let importedTasks = JSON.parse(e.target.result);
             if (!Array.isArray(importedTasks)) {
@@ -51,7 +51,7 @@ importInput.addEventListener('change', function(event) {
             }
             let uniqueIds = new Set(tasks.map(t => t.id));
             importedTasks.forEach(task => {
-                if(!uniqueIds.has(task.id)) {
+                if (!uniqueIds.has(task.id)) {
                     tasks.push(task);
                     uniqueIds.add(task.id);
                 }
@@ -74,7 +74,7 @@ clearCompletedButton.addEventListener('click', function () {
         alert('No completed tasks to clear!');
         return;
     }
-    
+
     completedTasks.forEach(task => undoStack.push(task));
     SaveUndoStack();
 
@@ -163,17 +163,17 @@ function saveTasks() {
 
 function renderTasks() {
     ul.innerHTML = '';
-    tasks.sort((a, b ) => b.pinned - a.pinned );
+    tasks.sort((a, b) => b.pinned - a.pinned);
     tasks.forEach((task, index) => {
 
         if (filter === 'active' && task.done) return;
         if (filter === 'completed' && !task.done) return;
         if (categoryFilter.value !== 'None' && task.category !== categoryFilter.value) return;
-        if(task.pinned === undefined) {
+        if (task.pinned === undefined) {
             tasks.pinned = false;
         }
 
-        if(!task.id){
+        if (!task.id) {
             task.id = Date.now() + Math.random();
         }
 
@@ -275,21 +275,20 @@ function renderTasks() {
         deleteButton.style.color = 'red';
         deleteButton.style.backgroundColor = 'transparent';
         deleteButton.addEventListener('click', function () {
-            if(!task.pinned)
-            {
-            lastDeleted = tasks[index];
-            undoStack.push({ 
-                type: 'taskDel',
-                index: index,
-                task: tasks[index]
-            });
-            clearRedo();
-            SaveUndoStack();
-            tasks.splice(index, 1);
-            saveTasks();
-            renderTasks();
+            if (!task.pinned) {
+                lastDeleted = tasks[index];
+                undoStack.push({
+                    type: 'taskDel',
+                    index: index,
+                    task: tasks[index]
+                });
+                clearRedo();
+                SaveUndoStack();
+                tasks.splice(index, 1);
+                saveTasks();
+                renderTasks();
             }
-            else{
+            else {
                 alert('Can\'t delete pinned tasks!')
             }
         });
@@ -299,7 +298,7 @@ function renderTasks() {
         pinBtn.textContent = task.pinned ? '📌 Unpin' : '📍 Pin';
         pinBtn.style.backgroundColor = 'transparent';
 
-        pinBtn.addEventListener('click', function(){
+        pinBtn.addEventListener('click', function () {
             task.pinned = !task.pinned;
 
             saveTasks();
@@ -307,7 +306,7 @@ function renderTasks() {
 
         })
 
-        if(task.pinned){
+        if (task.pinned) {
             li.style.borderLeft = '4px solid green';
         }
 
@@ -384,17 +383,19 @@ function renderTasks() {
             DelDescBtn.classList.add('DelDescBtn');
             DelDescBtn.textContent = 'Delete Description';
 
-            DelDescBtn.addEventListener('click', function(){
-                undoStack.push({ 
-                    type: 'descDel',
-                    index: index,
-                    actiondescription: task.description
-                });
+            DelDescBtn.addEventListener('click', function () {
+                let desc = task.description;
 
-                clearRedo();
-                SaveUndoStack();
                 task.description = "";
                 task.showDesc = false;
+
+                undoStack.push({
+                    type: 'delDesc',
+                    index: index,
+                    description: desc
+                });
+                SaveUndoStack();
+                clearRedo();
                 saveTasks();
                 renderTasks();
 
@@ -409,24 +410,27 @@ function renderTasks() {
                 editDescInput.focus();
 
                 editDescInput.addEventListener('blur', function () {
-                    let newDescVal = editDescInput.value.trim();
-                    if (newDescVal) {
-                        task.description = newDescVal;
-                    }
-                    else{
-                        task.description = '';
-                        task.showDesc = false;
-                    }
+                    // let newDescVal = editDescInput.value.trim();
+                    // if (newDescVal) {
+                    //     task.description = newDescVal;
+                    // }
+                    // else {
+                    //     task.description = '';
+                    //     task.showDesc = false;
+                    // }
+                    task.description = task.description;
                     saveTasks();
                     renderTasks();
                 });
 
                 editDescInput.addEventListener('keydown', function (event) {
                     if (event.key === 'Enter') {
+                        let newDescVal = editDescInput.value.trim();
                         undoStack.push({
                             type: 'descEdit',
                             index: index,
-                            oldDescription: task.description
+                            oldDescription: task.description,
+                            newDesc: newDescVal
                         });
                         clearRedo();
                         SaveUndoStack();
@@ -479,19 +483,20 @@ function addTask() {
 
     tasks.push({
         id: Date.now(),
-        text: value, 
-        done: false, 
+        text: value,
+        done: false,
         category: category,
         deadline: deadline,
         description: '',
         showDesc: false,
         pinned: false
     });
+
     undoStack.push({
         type: 'addTask',
-        index : tasks.length - 1,
+        index: tasks.length - 1,
         task: newTask
-    });
+    })
 
     clearRedo();
     SaveUndoStack();
@@ -569,7 +574,8 @@ ul.addEventListener('dblclick', function (event) {
                 undoStack.push({
                     type: 'taskEdit',
                     index: index,
-                    oldtext: currentText
+                    oldtext: currentText,
+                    newText: newValue
                 })
 
             }
@@ -669,7 +675,7 @@ function clearRedo() {
 }
 
 UndoBTN.addEventListener('click', function () {
-    if(!undoStack.isEmpty()){
+    if (!undoStack.isEmpty()) {
         let action = undoStack.pop();
 
         applyUndo(action);
@@ -681,17 +687,17 @@ UndoBTN.addEventListener('click', function () {
         saveTasks();
         renderTasks();
     }
-    else{
+    else {
         alert('No Task to Undo!');
     }
 });
 
-RedoBtn.addEventListener('click', function(){
-    if(!redoStack.isEmpty()){
+RedoBtn.addEventListener('click', function () {
+    if (!redoStack.isEmpty()) {
         let action = redoStack.pop();
 
         applyRedo(action);
-        
+
         undoStack.push(action);
 
         SaveUndoStack();
@@ -705,38 +711,43 @@ RedoBtn.addEventListener('click', function(){
 })
 
 function applyUndo(action) {
-    if(action.type === 'addTask'){
-        tasks.splice(action.index,1);
+    if (action.type === 'addTask') {
+        tasks.splice(action.index, 1);
     }
-       
-    else if(action.type === 'descDel'){
-        tasks[action.index].description = action.description;   
+    else if (action.type === 'descEdit') {
+        tasks[action.index].description = action.oldDescription;
+    }
+    else if (action.type === 'taskDel') {
+        tasks.splice(action.index, 0, action.task);
+    }
+    else if (action.type === 'delDesc') {
+        tasks[action.index].description = action.description;
         tasks[action.index].showDesc = true;
     }
-    else if(action.type === 'descEdit'){
-        tasks[action.index].description = action.oldDescription;     
+    else if (action.type === 'taskEdit') {
+        tasks[action.index].text = action.oldtext;
     }
-    else if(action.type === 'taskDel'){
-         tasks.splice(action.index, 0, action.task);
-    }
-    else if(action.type === 'delDesc'){
-            tasks[action.index].description = action.description;
+    else if (action.type === 'addTask') {
+        tasks.splice(action.index, 0, action.task);
     }
 }
 
 function applyRedo(action) {
-    if(action.type === 'addTask'){
+    if (action.type === 'addTask') {
         tasks.splice(action.index, 0, action.task);
     }
-    else if(action.type === 'descDel'){
+    else if (action.type === 'delDesc') {
         tasks[action.index].description = '';
         tasks[action.index].showDesc = false;
     }
-    else if(action.type === 'descEdit'){
-
+    else if (action.type === 'descEdit') {
+        tasks[action.index].description = action.newDesc;
     }
-    else if(action.type === 'taskDel'){
+    else if (action.type === 'taskDel') {
         tasks.splice(action.index, 1);
+    }
+    else if (action.type === 'taskEdit') {
+        tasks[action.index].text = action.newText;
     }
 }
 
