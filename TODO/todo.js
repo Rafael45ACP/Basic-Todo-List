@@ -396,9 +396,11 @@ function renderTasks() {
 
                 task.description = "";
                 task.showDesc = false;
+                
 
                 undoStack.push({
                     type: 'delDesc',
+                    id: task.id,
                     index: index,
                     description: desc
                 });
@@ -426,7 +428,6 @@ function renderTasks() {
                     //     task.description = '';
                     //     task.showDesc = false;
                     // }
-                    task.description = task.description;
                     saveTasks();
                     renderTasks();
                 });
@@ -436,6 +437,7 @@ function renderTasks() {
                         let newDescVal = editDescInput.value.trim();
                         undoStack.push({
                             type: 'descEdit',
+                            id: task.id,
                             index: index,
                             oldDescription: task.description,
                             newDesc: newDescVal
@@ -576,6 +578,8 @@ ul.addEventListener('dblclick', function (event) {
         event.target.replaceWith(editInput);
         editInput.focus();
 
+        let taskId = tasks[index].id;
+
         editInput.addEventListener('blur', function () {
             let newValue = editInput.value.trim();
             if (newValue != currentText) {
@@ -583,6 +587,7 @@ ul.addEventListener('dblclick', function (event) {
                 tasks[index].done = false;
                 undoStack.push({
                     type: 'taskEdit',
+                    id: taskId,
                     index: index,
                     oldtext: currentText,
                     newText: newValue
@@ -725,17 +730,26 @@ function applyUndo(action) {
         tasks.splice(action.index, 1);
     }
     else if (action.type === 'descEdit') {
-        tasks[action.index].description = action.oldDescription;
+        let task = tasks.find(t => t.id === action.id);
+        if (task) {
+            task.description = action.oldDescription;
+        }
     }
     else if (action.type === 'taskDel') {
         tasks.splice(action.index, 0, action.task);
     }
     else if (action.type === 'delDesc') {
-        tasks[action.index].description = action.description;
-        tasks[action.index].showDesc = true;
+        let task = tasks.find(t => t.id === action.id);
+        if (task) {
+            task.description = action.description;
+            task.showDesc = true;
+        }
     }
     else if (action.type === 'taskEdit') {
-        tasks[action.index].text = action.oldtext;
+        let task = tasks.find(t => t.id === action.id);
+        if (task) { 
+        task.text = action.oldtext;
+        }
     }
     else if (action.type === 'pinToggle'){
         let task = tasks.find(t => t.id === action.id);
@@ -750,17 +764,27 @@ function applyRedo(action) {
         tasks.splice(action.index, 0, action.task);
     }
     else if (action.type === 'delDesc') {
-        tasks[action.index].description = '';
-        tasks[action.index].showDesc = false;
+
+         let task = tasks.find(t => t.id === action.id);
+        if (task) {
+            task.description = '';
+            task.showDesc = false;     
+        }
     }
     else if (action.type === 'descEdit') {
-        tasks[action.index].description = action.newDesc;
+         let task = tasks.find(t => t.id === action.id);
+        if (task) {
+            task.description = action.newDesc;
+        }
     }
     else if (action.type === 'taskDel') {
         tasks.splice(action.index, 1);
     }
     else if (action.type === 'taskEdit') {
-        tasks[action.index].text = action.newText;
+         let task = tasks.find(t => t.id === action.id);
+        if (task) { 
+        task.text = action.newText;
+        }
     }
     else if (action.type === 'pinToggle') {
         let task = tasks.find(t => t.id === action.id);
