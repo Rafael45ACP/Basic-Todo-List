@@ -301,6 +301,14 @@ function renderTasks() {
         pinBtn.addEventListener('click', function () {
             task.pinned = !task.pinned;
 
+            undoStack.push({
+                type: 'pinToggle',
+                id: task.id,
+                oldPin: task.pinned
+            });
+
+            SaveUndoStack();
+            clearRedo();
             saveTasks();
             renderTasks();
 
@@ -481,7 +489,7 @@ function addTask() {
     let deadline = document.getElementById('deadlineInput').value;
 
 
-    tasks.push({
+    let newTask = {
         id: Date.now(),
         text: value,
         done: false,
@@ -490,16 +498,18 @@ function addTask() {
         description: '',
         showDesc: false,
         pinned: false
-    });
+    };
+
+    tasks.push(newTask);
 
     undoStack.push({
         type: 'addTask',
         index: tasks.length - 1,
-        task: newTask
-    })
+        task: { ...newTask }
+    });
 
-    clearRedo();
     SaveUndoStack();
+    clearRedo();
     saveTasks();
     renderTasks();
     input.value = '';
@@ -727,8 +737,11 @@ function applyUndo(action) {
     else if (action.type === 'taskEdit') {
         tasks[action.index].text = action.oldtext;
     }
-    else if (action.type === 'addTask') {
-        tasks.splice(action.index, 0, action.task);
+    else if (action.type === 'pinToggle'){
+        let task = tasks.find(t => t.id === action.id);
+        if (task) {
+            task.pinned = !action.oldPin;
+        }
     }
 }
 
@@ -748,6 +761,12 @@ function applyRedo(action) {
     }
     else if (action.type === 'taskEdit') {
         tasks[action.index].text = action.newText;
+    }
+    else if (action.type === 'pinToggle') {
+        let task = tasks.find(t => t.id === action.id);
+        if (task) {
+            task.pinned = action.oldPin;
+        }
     }
 }
 
