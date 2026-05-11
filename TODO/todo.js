@@ -244,6 +244,14 @@ function renderTasks() {
                         task.description = descInput.value.trim();
                         task.showDesc = true;
 
+                        undoStack.push({
+                            type: 'addDesc',
+                            id: task.id,
+                            oldDesc: task.description
+                        });
+                        SaveUndoStack();
+                        clearRedo();
+
                         saveTasks();
                         renderTasks();
                     }
@@ -252,6 +260,14 @@ function renderTasks() {
                 descInput.addEventListener('blur', function () {
                     task.description = descInput.value.trim();
                     task.showDesc = true;
+
+                    undoStack.push({
+                            type: 'addDesc',
+                            id: task.id,
+                            oldDesc: task.description
+                        });
+                        SaveUndoStack();
+                        clearRedo();
 
                     saveTasks();
                     renderTasks();
@@ -757,6 +773,13 @@ function applyUndo(action) {
             task.pinned = !action.oldPin;
         }
     }
+    else if (action.type === 'addDesc'){
+        let task = tasks.find(t => t.id === action.id);
+        if(task){
+            task.description = '';
+            task.showDesc = false;
+        }
+    };
 }
 
 function applyRedo(action) {
@@ -792,6 +815,13 @@ function applyRedo(action) {
             task.pinned = action.oldPin;
         }
     }
+    else if (action.type === 'addDesc'){
+        let task = tasks.find(t => t.id === action.id);
+        if(task){
+            task.description = action.oldDesc;
+            task.showDesc = true;
+        }
+    };
 }
 
 function SaveRedoStack() {
