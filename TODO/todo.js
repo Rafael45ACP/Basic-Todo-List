@@ -69,16 +69,34 @@ importInput.addEventListener('change', function (event) {
 
 
 clearCompletedButton.addEventListener('click', function () {
-    let completedTasks = tasks.filter(task => task.done);
+    let completedTasks = [];
+
+    tasks.forEach((task, index) => {
+        if (task.done) {
+            completedTasks.push({ task, index });
+        }
+    });
+
     if (completedTasks.length === 0) {
         alert('No completed tasks to clear!');
         return;
     }
 
-    completedTasks.forEach(task => undoStack.push(task));
-    SaveUndoStack();
+    // ✅ Save undo actions properly
+    completedTasks.forEach(item => {
+        undoStack.push({
+            type: 'taskDel',
+            index: item.index,
+            task: { ...item.task }
+        });
+    });
 
+    SaveUndoStack();
+    clearRedo();
+
+    // ✅ Remove completed tasks
     tasks = tasks.filter(task => !task.done);
+
     saveTasks();
     renderTasks();
 });
@@ -436,14 +454,6 @@ function renderTasks() {
                 editDescInput.focus();
 
                 editDescInput.addEventListener('blur', function () {
-                    // let newDescVal = editDescInput.value.trim();
-                    // if (newDescVal) {
-                    //     task.description = newDescVal;
-                    // }
-                    // else {
-                    //     task.description = '';
-                    //     task.showDesc = false;
-                    // }
                     saveTasks();
                     renderTasks();
                 });
@@ -821,7 +831,9 @@ function applyRedo(action) {
             task.description = action.oldDesc;
             task.showDesc = true;
         }
-    };
+    }
+   
+
 }
 
 function SaveRedoStack() {
