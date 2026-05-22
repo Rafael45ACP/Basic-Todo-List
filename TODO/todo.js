@@ -246,7 +246,7 @@ function renderTasks() {
         descButton.textContent = task.description
             ? (task.showDesc ? 'Hide Description' : 'Show Description')
             : 'Add Description';
-
+        //FIX NEXT TIME
         descButton.addEventListener('click', function () {
 
             // If NO description yet → create one
