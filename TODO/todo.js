@@ -72,7 +72,7 @@ clearCompletedButton.addEventListener('click', function () {
     let completedTasks = [];
 
     tasks.forEach((task, index) => {
-        if (task.done) {
+        if (task.done && !task.pinned) {
             completedTasks.push({ task, index });
         }
     });
@@ -95,7 +95,7 @@ clearCompletedButton.addEventListener('click', function () {
     clearRedo();
 
     // ✅ Remove completed tasks
-    tasks = tasks.filter(task => !task.done);
+    tasks = tasks.filter(task => !(task.done && !task.pinned)) ;
 
     saveTasks();
     renderTasks();
