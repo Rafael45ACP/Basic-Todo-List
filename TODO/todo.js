@@ -246,7 +246,7 @@ function renderTasks() {
         descButton.textContent = task.description
             ? (task.showDesc ? 'Hide Description' : 'Show Description')
             : 'Add Description';
-        //FIX NEXT TIME
+
         descButton.addEventListener('click', function () {
 
             // If NO description yet → create one
@@ -259,14 +259,18 @@ function renderTasks() {
 
                 descInput.addEventListener('keydown', function (event) {
                     if (event.key === 'Enter') {
-                        task.description = descInput.value.trim();
+                        let newDesc = descInput.value.trim();
+
+                        task.description = newDesc;
                         task.showDesc = true;
+
 
                         undoStack.push({
                             type: 'addDesc',
                             id: task.id,
                             oldDesc: task.description
                         });
+                        
                         SaveUndoStack();
                         clearRedo();
 
@@ -276,7 +280,9 @@ function renderTasks() {
                 });
 
                 descInput.addEventListener('blur', function () {
-                    task.description = descInput.value.trim();
+                    let newDesc = descInput.value.trim();
+
+                    task.description = newDesc;
                     task.showDesc = true;
 
                     undoStack.push({
@@ -454,6 +460,22 @@ function renderTasks() {
                 editDescInput.focus();
 
                 editDescInput.addEventListener('blur', function () {
+                
+                        let newDescVal = editDescInput.value.trim();
+
+                        task.description = newDescVal;
+                        undoStack.push({
+                            type: 'descEdit',
+                            id: task.id,
+                            index: index,
+                            oldDescription: task.description,
+                            newDesc: newDescVal
+                        });
+                        clearRedo();
+                        SaveUndoStack();
+                        
+                    
+                
                     saveTasks();
                     renderTasks();
                 });
@@ -461,6 +483,7 @@ function renderTasks() {
                 editDescInput.addEventListener('keydown', function (event) {
                     if (event.key === 'Enter') {
                         let newDescVal = editDescInput.value.trim();
+                        task.description = newDescVal;
                         undoStack.push({
                             type: 'descEdit',
                             id: task.id,
@@ -473,8 +496,8 @@ function renderTasks() {
                         editDescInput.blur();
                     }
                     if (event.key === 'Escape') {
-                        renderTasks();
-                    }
+                        renderTasks()};
+                    
                 });
             });
 
