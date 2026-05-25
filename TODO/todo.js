@@ -456,47 +456,38 @@ function renderTasks() {
                 let editDescInput = document.createElement('input');
                 editDescInput.value = task.description;
 
+                let oldDesc = task.description;
+                let saved = false;
+
                 descText.replaceWith(editDescInput);
                 editDescInput.focus();
 
                 editDescInput.addEventListener('blur', function () {
+                    if (saved) return;
                 
-                     let old = task.description;
-                        let newDescVal = editDescInput.value.trim();
-                        task.description = newDescVal;
-
-                        task.description = newDescVal;
-                        undoStack.push({
-                            type: 'descEdit',
-                            id: task.id,
-                            index: index,
-                            oldDesc: old,
-                            newDesc: newDescVal
-                        });
-                        clearRedo();
-                        SaveUndoStack();
-                        
-                    
+                    task.description = oldDesc;
                 
-                    saveTasks();
                     renderTasks();
                 });
 
                 editDescInput.addEventListener('keydown', function (event) {
                     if (event.key === 'Enter') {
-                        let old = task.description;
                         let newDescVal = editDescInput.value.trim();
                         task.description = newDescVal;
                         undoStack.push({
                             type: 'descEdit',
                             id: task.id,
                             index: index,
-                            oldDesc: old,
+                            oldDesc: oldDesc,
                             newDesc: newDescVal
                         });
                         SaveUndoStack();
                         clearRedo();
-                        // editDescInput.blur();
+
+                        saved = true;
+                        editDescInput.blur();
+                        saveTasks();
+                        renderTasks();
                     }
                     if (event.key === 'Escape') {
                         renderTasks()};
