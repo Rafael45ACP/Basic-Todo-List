@@ -461,14 +461,16 @@ function renderTasks() {
 
                 editDescInput.addEventListener('blur', function () {
                 
+                     let old = task.description;
                         let newDescVal = editDescInput.value.trim();
+                        task.description = newDescVal;
 
                         task.description = newDescVal;
                         undoStack.push({
                             type: 'descEdit',
                             id: task.id,
                             index: index,
-                            oldDescription: task.description,
+                            oldDesc: old,
                             newDesc: newDescVal
                         });
                         clearRedo();
@@ -482,18 +484,19 @@ function renderTasks() {
 
                 editDescInput.addEventListener('keydown', function (event) {
                     if (event.key === 'Enter') {
+                        let old = task.description;
                         let newDescVal = editDescInput.value.trim();
                         task.description = newDescVal;
                         undoStack.push({
                             type: 'descEdit',
                             id: task.id,
                             index: index,
-                            oldDescription: task.description,
+                            oldDesc: old,
                             newDesc: newDescVal
                         });
-                        clearRedo();
                         SaveUndoStack();
-                        editDescInput.blur();
+                        clearRedo();
+                        // editDescInput.blur();
                     }
                     if (event.key === 'Escape') {
                         renderTasks()};
@@ -781,7 +784,7 @@ function applyUndo(action) {
     else if (action.type === 'descEdit') {
         let task = tasks.find(t => t.id === action.id);
         if (task) {
-            task.description = action.oldDescription;
+            task.description = action.oldDesc;
         }
     }
     else if (action.type === 'taskDel') {
