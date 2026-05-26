@@ -358,6 +358,39 @@ function renderTasks() {
             li.style.borderLeft = '4px solid green';
         }
 
+        categorySpan.addEventListener('dblclick', function () {
+
+            let currentCategory = task.category;
+
+            let categorySelect = document.createElement('select');
+            ['None', 'Personal', 'Gym', 'School'].forEach(cat => {
+                let option = document.createElement('option');
+                option.value = cat;
+                option.textContent = cat;
+                if (cat === currentCategory) {
+                    option.selected = true;
+                }
+                categorySelect.appendChild(option);
+            });
+
+            
+            categorySpan.replaceWith(categorySelect);
+            categorySelect.focus();
+
+            categorySelect.addEventListener('blur', function () {
+                let newCategory = categorySelect.value;
+
+                task.category = newCategory;
+
+                saveTasks();
+                renderTasks();
+            });
+
+            categorySelect.addEventListener('change', function () {
+                categorySelect.blur();
+            });
+
+        });
 
 
         li.appendChild(pinBtn);
@@ -649,6 +682,14 @@ ul.addEventListener('dblclick', function (event) {
         });
     }
 });
+
+// ul.addEventListener('dblclick', function (event) {
+//     if(event.target.tagName === 'categorySpan'){
+
+        
+//     }
+// });
+
 
 ul.addEventListener('dragstart', function (event) {
     let li = event.target.closest('li');
