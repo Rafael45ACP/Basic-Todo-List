@@ -382,7 +382,14 @@ function renderTasks() {
 
                 task.category = newCategory;
 
-                
+                undoStack.push({
+                    type: 'catChange',
+                    id: task.id,
+                    oldCat: currentCategory,
+                    newCat: newCategory
+                });
+                SaveUndoStack();
+                clearRedo();
 
                 saveTasks();
                 renderTasks();
@@ -408,6 +415,15 @@ function renderTasks() {
                 let newDeadline = deadlineDate.value;
 
                 task.deadline = newDeadline;
+
+                undoStack.push({
+                    type:'deadChange',
+                    id: task.id,
+                    oldDeadline: currentDeadline,
+                    newDeadline: newDeadline
+                });
+                SaveUndoStack();
+                clearRedo();
 
                 saveTasks();
                 renderTasks();
@@ -865,7 +881,19 @@ function applyUndo(action) {
             task.description = '';
             task.showDesc = false;
         }
-    };
+    }
+    else if (action.type === 'catChange'){
+        let task = tasks.find(t=> t.id === action.id);
+        if(task){
+            task.category = action.oldCat;
+        }
+    }
+    else if (action.type === 'deadChange'){
+        let task = tasks.find(t=> t.id === action.id);
+        if(task){
+            task.deadline = action.oldDeadline;
+        }
+    }
 }
 
 function applyRedo(action) {
@@ -908,7 +936,18 @@ function applyRedo(action) {
             task.showDesc = true;
         }
     }
-   
+    else if (action.type === 'catChange'){
+        let task = tasks.find(t=> t.id === action.id);
+        if(task){
+            task.category = action.newCat;
+        }
+    }
+     else if (action.type === 'deadChange'){
+        let task = tasks.find(t=> t.id === action.id);
+        if(task){
+            task.deadline = action.newDeadline;
+        }
+    }
 
 }
 
