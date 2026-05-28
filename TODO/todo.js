@@ -382,6 +382,8 @@ function renderTasks() {
 
                 task.category = newCategory;
 
+                
+
                 saveTasks();
                 renderTasks();
             });
@@ -390,6 +392,30 @@ function renderTasks() {
                 categorySelect.blur();
             });
 
+        });
+
+        deadlineSpan.addEventListener('dblclick', function () {
+            let currentDeadline = task.deadline ? task.deadline : '';
+
+            let deadlineDate = document.createElement('input');
+            deadlineDate.type = 'date';
+            deadlineDate.value = currentDeadline;
+
+            deadlineSpan.replaceWith(deadlineDate);
+            deadlineDate.focus();
+
+            deadlineDate.addEventListener('blur', function () {
+                let newDeadline = deadlineDate.value;
+
+                task.deadline = newDeadline;
+
+                saveTasks();
+                renderTasks();
+            });
+
+            deadlineDate.addEventListener('change', function () {
+                deadlineDate.blur();
+            });
         });
 
 
@@ -682,14 +708,6 @@ ul.addEventListener('dblclick', function (event) {
         });
     }
 });
-
-// ul.addEventListener('dblclick', function (event) {
-//     if(event.target.tagName === 'categorySpan'){
-
-        
-//     }
-// });
-
 
 ul.addEventListener('dragstart', function (event) {
     let li = event.target.closest('li');
