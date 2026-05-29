@@ -8,6 +8,7 @@ let filter = 'all';
 let allFilter = document.getElementById('ALL');
 let activeFilter = document.getElementById('ACTIVE');
 let completedFilter = document.getElementById('COMPLETED');
+let overdueFilter = document.getElementById('OVERDUE');
 
 let categoryFilter = document.getElementById('filterCategory');
 
@@ -186,6 +187,7 @@ function renderTasks() {
 
         if (filter === 'active' && task.done) return;
         if (filter === 'completed' && !task.done) return;
+        if(filter === 'overdue' && !task.overdue)return;
         if (categoryFilter.value !== 'None' && task.category !== categoryFilter.value) return;
         if (task.pinned === undefined) {
             tasks.pinned = false;
@@ -450,6 +452,7 @@ function renderTasks() {
             }
             else if (deadline.toDateString() < now.toDateString() && !task.done) {
                 deadlineSpan.style.color = 'red';
+                
             }
 
             else if (deadline.toDateString() === now.toDateString()) {
@@ -477,6 +480,7 @@ function renderTasks() {
             if (timeLeft < 0 && !task.done) {
                 timeleftSpan.textContent = ' (Overdue)';
                 timeleftSpan.style.color = 'red';
+                task.overdue = true;
             }
             else if (timeLeft <= 24 * 60 * 60 * 1000 && !task.done) {
                 timeleftSpan.style.color = 'orange';
@@ -617,7 +621,8 @@ function addTask() {
         deadline: deadline,
         description: '',
         showDesc: false,
-        pinned: false
+        pinned: false,
+        overdue: false
     };
 
     tasks.push(newTask);
@@ -784,6 +789,7 @@ function setFilter(selectedFilter) {
     allFilter.checked = selectedFilter === 'all';
     activeFilter.checked = selectedFilter === 'active';
     completedFilter.checked = selectedFilter === 'completed';
+    overdueFilter.checked = selectedFilter === 'overdue';
 
     renderTasks();
 }
@@ -791,6 +797,7 @@ function setFilter(selectedFilter) {
 allFilter.addEventListener('change', () => setFilter('all'));
 activeFilter.addEventListener('change', () => setFilter('active'));
 completedFilter.addEventListener('change', () => setFilter('completed'));
+overdueFilter.addEventListener('change', () => setFilter('overdue'));
 
 categoryFilter.addEventListener('change', function () {
     let selectedCat = categoryFilter.value;
